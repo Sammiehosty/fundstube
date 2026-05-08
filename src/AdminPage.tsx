@@ -644,7 +644,8 @@ export default function AdminPage() {
                 <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
                   <th className="text-left py-4 px-2 text-left">Access Key</th>
                   <th className="text-left py-4 px-2 text-left">Node Owner</th>
-                  <th className="text-center py-4 px-2">Earning Stat</th>
+                  <th className="text-center py-4 px-2">Earning</th>
+					 <th className="text-center py-4 px-2">Profile</th>
                   <th className="text-right py-4 px-2 text-right">Actions</th>
                 </tr>
               </thead>
@@ -661,25 +662,8 @@ export default function AdminPage() {
                   accessCodes.map((ac) => (
                     <tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left">
                       <td className="py-5 px-2">
-						   {ac.user && (
-                               <button 
-                                onClick={async () => {
-                                  const freshProfile = await db.getProfile(ac.code);
-                                  setInspectingCode({ ...ac, profile: freshProfile });
-                                }}
-                                className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
-                               >
-                                 <Eye size={14} />{ac.code}
-                               </button>
-                            )}
-
-						   {ac.user ? (
-                          
-                          ) : (
-                            <span className="font-mono text-xl font-black text-white tracking-widest">{ac.code}</span>
-                          )}
-                       
-                      </td>
+						    <span className="font-mono text-xl font-black text-white tracking-widest">{ac.code}</span>
+                       </td>
                       <td className="py-5 px-2">
                         <div className="text-xs font-bold text-slate-400">
                           {ac.user ? (
@@ -695,6 +679,24 @@ export default function AdminPage() {
                            <span className="text-[11px] font-black text-emerald-400 tracking-tight">₦{Number(ac.totalEarned || 0).toLocaleString()}</span>
                          </div>
                       </td>
+
+						   <td className="py-5 px-2 text-right">
+                        <div className="flex justify-end gap-2">
+						{ac.user && (
+                               <button 
+                                onClick={async () => {
+                                  const freshProfile = await db.getProfile(ac.code);
+                                  setInspectingCode({ ...ac, profile: freshProfile });
+                                }}
+                                className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
+                               >
+                                 <Eye size={14} />{ac.code}
+                               </button>
+                            )}
+
+						</div>
+                      </td>
+						
                       <td className="py-5 px-2 text-right">
                         <div className="flex justify-end gap-2">
                           
