@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Lock, 
-  Phone, 
   Settings, 
-  Database, 
   TrendingUp, 
   LogOut, 
   Trash2,
@@ -21,7 +19,8 @@ import {
   AlertCircle,
   Eye,
   CheckCircle2,
-  Headset
+  Headset,
+  RefreshCcw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,6 +32,7 @@ export default function AdminPage() {
   const [settings, setSettings] = useState<AdminSettings | null>(null);
   const [submissions, setSubmissions] = useState<PaymentSubmission[]>([]);
   const [accessCodes, setAccessCodes] = useState<AccessCode[]>([]);
+  const [earningsHistory, setEarningsHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState('');
@@ -62,16 +62,37 @@ export default function AdminPage() {
 
   const loadData = async () => {
     try {
-      const [s, sub, c] = await Promise.all([
+      const [s, sub, c, e] = await Promise.all([
         db.getSettings(),
         db.getSubmissions(),
-        db.getAccessCodes()
+        db.getAccessCodes(),
+        db.getAllEarnings()
       ]);
       if (s) setSettings(s);
       setSubmissions(Array.isArray(sub) ? sub : []);
-      setAccessCodes(Array.isArray(c) ? c : []);
+      if (Array.isArray(c)) setAccessCodes(c);
+      setEarningsHistory(Array.isArray(e) ? e : []);
     } catch (err) {
       console.error("Critical Admin Sync Failure:", err);
+      // Fallback UI data if not already set
+      if (!settings) {
+        setSettings({
+          appName: 'Fundstube',
+          price: 6900,
+          accountNumber: '---',
+          accountName: '---',
+          bankName: '---',
+          remark: '---',
+          adminPassword: 'admin123',
+          adminUsdtWallet: '',
+          telegramLink: '',
+          communityPopupEnabled: false,
+          supportCode: '',
+          supportEnabled: false,
+          minWithdrawalBank: 1000,
+          minWithdrawalUsdt: 5
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -79,6 +100,8 @@ export default function AdminPage() {
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(loadData, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const confirmCancelWithdrawal = async () => {
@@ -234,27 +257,27 @@ export default function AdminPage() {
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
         </div>
-        <div className="w-full max-w-md bg-white/5 backdrop-blur-3xl border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative z-10">
+        <div className="w-full max-w-md bg-white/5 backdrop-blur-3xl border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative z-10 text-center">
           <div className="flex flex-col items-center mb-10">
             <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-600/20">
               <Lock className="text-white" size={32} />
             </div>
-            <h1 className="text-3xl font-black tracking-tight">Admin Gateway</h1>
-            <div className="flex items-center gap-2 mt-2 text-left w-full justify-center">
+            <h1 className="text-3xl font-black tracking-tight text-white">Admin Gateway</h1>
+            <div className="flex items-center gap-2 mt-2 w-full justify-center">
                <div className={`w-1.5 h-1.5 rounded-full ${settings ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
                <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
                  {settings ? 'Server Online' : 'Server Offline'}
                </p>
             </div>
           </div>
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-6 text-left">
             <div>
               <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 ml-1 text-center">Authentication Phrase</label>
               <input 
                 type="password" 
                 autoFocus
                 placeholder="••••••••"
-                className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-center tracking-widest"
+                className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-center tracking-widest text-white"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -274,7 +297,7 @@ export default function AdminPage() {
               </motion.div>
             )}
 
-            <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-lg transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)]">
+            <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-lg transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] text-white">
               Access Control Panel
             </button>
             <button 
@@ -297,7 +320,6 @@ export default function AdminPage() {
   const totalNetworkEarnings = (Array.isArray(accessCodes) ? accessCodes : [])
     .reduce((acc, curr) => acc + (Number(curr?.totalEarned) || 0), 0);
 
-  // Safety rendering check
   if (!settings) return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">
       <div className="w-8 h-8 border-t-blue-500 border-2 rounded-full animate-spin" />
@@ -310,7 +332,6 @@ export default function AdminPage() {
         <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] bg-blue-600/10 blur-[100px] rounded-full" />
       </div>
 
-      {/* Global Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div 
@@ -330,13 +351,13 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
           <div>
-            <h1 className="text-4xl font-black tracking-tighter">{settings?.appName || 'Protocol'} Control</h1>
+            <h1 className="text-4xl font-black tracking-tighter text-white">{settings?.appName || 'Protocol'} Control</h1>
             <p className="text-slate-500 font-bold mt-1 uppercase text-[10px] tracking-[0.3em]">Configuration & Node Monitoring</p>
           </div>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => navigate('/')}
-              className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2"
+              className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 text-white"
             >
               <ChevronLeft size={16} /> Live View
             </button>
@@ -350,8 +371,8 @@ export default function AdminPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-
+         
+		 
           {/* Settings Card */}
           <div className="lg:col-span-1">
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl h-full sticky top-12">
@@ -359,10 +380,10 @@ export default function AdminPage() {
                 <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
                   <Settings size={20} />
                 </div>
-                <h2 className="text-xl font-black tracking-tight">System Configuration</h2>
+                <h2 className="text-xl font-black tracking-tight text-white uppercase">Configuration</h2>
               </div>
 
-              <form onSubmit={handleUpdateSettings} className="space-y-6">
+              <form onSubmit={handleUpdateSettings} className="space-y-6 text-left">
                 <div className="space-y-6">
                   <div>
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Access Code Price (₦)</label>
@@ -377,7 +398,7 @@ export default function AdminPage() {
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Payment Bank</label>
                     <input 
                       type="text" 
-                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all"
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-white"
                       value={settings?.bankName || ''}
                       onChange={(e) => setSettings(prev => prev ? {...prev, bankName: e.target.value} : null)}
                     />
@@ -386,7 +407,7 @@ export default function AdminPage() {
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Account Number</label>
                     <input 
                       type="text" 
-                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all font-mono tracking-wider"
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all font-mono tracking-wider text-white"
                       value={settings?.accountNumber || ''}
                       onChange={(e) => setSettings(prev => prev ? {...prev, accountNumber: e.target.value} : null)}
                     />
@@ -395,31 +416,13 @@ export default function AdminPage() {
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Account Name</label>
                     <input 
                       type="text" 
-                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-xs"
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-xs text-white"
                       value={settings?.accountName || ''}
                       onChange={(e) => setSettings(prev => prev ? {...prev, accountName: e.target.value} : null)}
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Transfer Remark</label>
-                    <input 
-                      type="text" 
-                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all italic text-amber-500"
-                      value={settings?.remark || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, remark: e.target.value} : null)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">App Name</label>
-                    <input 
-                      type="text" 
-                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-white"
-                      value={settings?.appName || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, appName: e.target.value} : null)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Admin Access Password</label>
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-white">Admin Password</label>
                     <input 
                       type="text" 
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-rose-400"
@@ -427,316 +430,149 @@ export default function AdminPage() {
                       onChange={(e) => setSettings(prev => prev ? {...prev, adminPassword: e.target.value} : null)}
                     />
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-emerald-500">Global USDT Wallet (TRC20)</label>
-                    <input 
-                      type="text" 
-                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-emerald-400 font-mono text-xs"
-                      value={settings?.adminUsdtWallet || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, adminUsdtWallet: e.target.value} : null)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Telegram Link</label>
-                    <input 
-                      type="text" 
-                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-blue-400"
-                      value={settings?.telegramLink || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, telegramLink: e.target.value} : null)}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Community Popup</label>
-                    <button 
-                      type="button"
-                      onClick={() => setSettings(prev => prev ? {...prev, communityPopupEnabled: !prev.communityPopupEnabled} : null)}
-                      className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
-                        settings?.communityPopupEnabled ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20'
-                      }`}
-                    >
-                      {settings?.communityPopupEnabled ? 'Enabled' : 'Disabled'}
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 mt-2">
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-[8px]">Min Bank (₦)</label>
-                      <input 
-                        type="number" 
-                        className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs"
-                        value={settings?.minWithdrawalBank || 0}
-                        onChange={(e) => setSettings(prev => prev ? {...prev, minWithdrawalBank: parseInt(e.target.value)} : null)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-[8px]">Min USDT ($)</label>
-                      <input 
-                        type="number" 
-                        className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs"
-                        value={settings?.minWithdrawalUsdt || 0}
-                        onChange={(e) => setSettings(prev => prev ? {...prev, minWithdrawalUsdt: parseInt(e.target.value)} : null)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-6 border-t border-white/5 mt-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Headset size={14} className="text-blue-500" />
-                      <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Live Support Integration</h4>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Integration Code (Script)</label>
-                        <textarea 
-                          rows={4}
-                          placeholder="Paste your support widget script here..."
-                          className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-mono text-[10px] px-6 focus:border-blue-500/50 transition-all text-slate-300"
-                          value={settings?.supportCode || ''}
-                          onChange={(e) => setSettings(prev => prev ? {...prev, supportCode: e.target.value} : null)}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Support Status</label>
-                        <button 
-                          type="button"
-                          onClick={() => setSettings(prev => prev ? {...prev, supportEnabled: !prev.supportEnabled} : null)}
-                          className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
-                            settings?.supportEnabled ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20'
-                          }`}
-                        >
-                          {settings?.supportEnabled ? 'Online' : 'Offline'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="pt-4 space-y-3">
-                  <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-lg transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)]">
+                  <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] text-white">
                     Apply Updates
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={resetSettings}
-                    className="w-full py-3 border border-white/5 rounded-xl font-bold text-[10px] text-slate-600 hover:text-white transition-colors uppercase tracking-[0.2em]"
-                  >
-                    Reset Defaults
                   </button>
                 </div>
               </form>
             </div>
           </div>
 
-          {/* Submissions Table */}
-          <div className="lg:col-span-2">
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl h-full flex flex-col">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
-                    <Database size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-black tracking-tight">Access Log</h2>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{Array.isArray(submissions) ? submissions.length : 0} Total Captures</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={clearSubmissions}
-                  className="px-5 py-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest"
-                >
-                  <Trash2 size={14} /> Wipe Records
-                </button>
-              </div>
-
-              <div className="overflow-x-auto flex-grow text-left">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
-                      <th className="text-left py-4 px-2 text-left">Time/Date</th>
-                      <th className="text-left py-4 px-2 text-left">User Identification</th>
-                      <th className="text-left py-4 px-2 text-left">Contact</th>
-                      <th className="text-right py-4 px-2 text-right">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {!Array.isArray(submissions) || submissions.length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="py-32 text-center">
-                           <Database className="mx-auto text-slate-800 mb-4" size={48} />
-                           <p className="text-slate-600 font-black uppercase tracking-[0.3em] text-[10px]">Database Empty</p>
-                        </td>
-                      </tr>
-                    ) : (
-                      submissions.map((sub) => (
-                        <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all text-left">
-                          <td className="py-5 px-2">
-                            <div className="text-xs font-black text-white">
-                              {sub.timestamp ? new Date(Number(sub.timestamp)).toLocaleDateString() : 'N/A'}
-                            </div>
-                            <div className="text-[10px] text-slate-500 font-bold mt-0.5">
-                              {sub.timestamp ? new Date(Number(sub.timestamp)).toLocaleTimeString() : 'N/A'}
-                            </div>
-                          </td>
-                          <td className="py-5 px-2">
-                            <div className="font-black text-sm text-blue-400 group-hover:text-blue-300 transition-colors uppercase">{sub.fullName}</div>
-                            <div className="text-[10px] text-slate-500 font-bold tracking-tight lowercase">{sub.email}</div>
-                          </td>
-                          <td className="py-5 px-2 text-left">
-                            <div className="text-xs font-black flex items-center gap-1.5 text-slate-300">
-                              <Phone size={10} className="text-blue-500" /> {sub.phone}
-                            </div>
-                            <div className="text-[10px] text-slate-600 font-bold mt-1 uppercase tracking-tighter">Region: {sub.country}</div>
-                          </td>
-                          <td className="py-5 px-2 text-right">
-                            <div className="flex flex-col items-end gap-2">
-                               <div className="font-black text-white tracking-tighter">₦{Number(sub.price || 0).toLocaleString()}</div>
+          {/* Submissions & Nodes Table */}
+          <div className="lg:col-span-2 space-y-8">
+             {/* Submissions */}
+             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
+               <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-xl font-black uppercase text-white">Access Log</h2>
+                  <span className="text-[10px] font-black text-slate-500 uppercase">{Array.isArray(submissions) ? submissions.length : 0} Leads</span>
+               </div>
+               <div className="overflow-x-auto text-left">
+                 <table className="w-full border-collapse">
+                   <tbody className="divide-y divide-white/5">
+                     {submissions.slice(0, 10).map((sub) => (
+                       <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
+                         <td className="py-4 px-2">
+                           <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
+                           <div className="text-[9px] text-slate-600 font-bold">{sub.phone}</div>
+                         </td>
+                         <td className="py-4 px-2 text-right">
+                            <div className="flex flex-col items-end gap-1">
+                               <div className="font-black text-white text-xs">₦{Number(sub.price || 0).toLocaleString()}</div>
                                <button 
                                 onClick={async () => {
-                                  // Attempt to find a code that matches this submission (by email or phone)
                                   const matchingCode = accessCodes.find(c => c.user === sub.fullName);
                                   if (matchingCode) {
                                     const freshProfile = await db.getProfile(matchingCode.code);
                                     setInspectingCode({ ...matchingCode, profile: freshProfile });
                                   } else {
-                                    showToast("No active node for this user yet", "error");
+                                    showToast("No active node for this user", "error");
                                   }
                                 }}
-                                className="px-2 py-1 bg-white/5 border border-white/10 rounded-md text-[8px] font-black uppercase text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+                                className="px-4 py-2 bg-blue-600/20 border border-blue-500/50 rounded-lg text-[10px] font-black uppercase text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-lg"
                                >
-                                 View User Log
+                                 <Eye size={12} /> View Logs
                                </button>
                             </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
+                         </td>
+                       </tr>
+                     ))}
+                   </tbody>
+                 </table>
+               </div>
+             </div>
 
-        {/* Access Code Management */}
-        <div className="mt-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
-                <Key size={20} />
-              </div>
-              <div>
-                <h2 className="text-xl font-black tracking-tight">Access Codes</h2>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{Array.isArray(accessCodes) ? accessCodes.length : 0} Active Nodes</p>
-              </div>
-            </div>
-            <button 
-              onClick={handleGenerateCode}
-              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2"
-            >
-              <Plus size={16} /> Generate New Code
-            </button>
-          </div>
-
-          <div className="overflow-x-auto text-left">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
-                  <th className="text-left py-4 px-2 text-left">Access Key</th>
-                  <th className="text-left py-4 px-2 text-left">Node Owner</th>
-                  <th className="text-center py-4 px-2">Earning Stat</th>
-                  <th className="text-right py-4 px-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {loading ? (
-                  <tr>
-                    <td colSpan={4} className="py-20 text-center text-blue-500 font-black uppercase tracking-widest text-[10px] animate-pulse">Syncing Node DB...</td>
-                  </tr>
-                ) : !Array.isArray(accessCodes) || accessCodes.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="py-12 text-center text-slate-600 font-bold uppercase tracking-widest text-[10px]">No codes generated</td>
-                  </tr>
-                ) : (
-                  accessCodes.map((ac) => (
-                    <tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left">
-                      <td className="py-5 px-2">
-                         <button 
+             {/* Active Access Codes */}
+             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
+               <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-xl font-black uppercase text-white">Active Nodes</h2>
+                  <button onClick={handleGenerateCode} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase">
+                    New Code
+                  </button>
+               </div>
+               <div className="overflow-x-auto text-left">
+                 <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
+                        <th className="py-4 px-2 text-left">Key</th>
+                        <th className="py-4 px-2 text-left">Owner</th>
+                        <th className="py-4 px-2 text-right">Action</th>
+                      </tr>
+                    </thead>
+                   <tbody className="divide-y divide-white/5">
+                     {accessCodes.map((ac) => (
+                       <tr key={ac.code} className="group hover:bg-white/[0.02] transition-all">
+                         <td className="py-4 px-2">
+                            {ac.profile && (
+                             <button 
+                              onClick={async () => {
+                                const freshProfile = await db.getProfile(ac.code);
+                                setInspectingCode({ ...ac, profile: freshProfile });
+                              }}
+                              className="px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all flex items-center gap-2"
+                            >
+                              <Eye size={12} />
+                            </button>
+                          )}
+                           <div className="font-mono text-base font-black text-blue-400">{ac.code}</div>
+                         </td>
+                         <td className="py-4 px-2">
+                            <div className="font-black text-xs text-white uppercase">{ac.user || 'Unassigned'}</div>
+                            <div className="text-[9px] text-emerald-500 font-bold">₦{Number(ac.totalEarned || 0).toLocaleString()}</div>
+                         </td>
+                         <td className="py-4 px-2 text-right flex justify-end gap-2">
+                            {ac.user && (
+                               <button 
                                 onClick={async () => {
                                   const freshProfile = await db.getProfile(ac.code);
                                   setInspectingCode({ ...ac, profile: freshProfile });
                                 }}
                                 className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
                                >
-                                 <Eye size={14} />
+                                 <Eye size={14} /> View Logs
                                </button>
                             )}
-                        <div className="font-mono text-base font-black text-blue-400">{ac.code}</div>
-                      </td>
-                      <td className="py-5 px-2">
-                        <div className="text-xs font-bold text-slate-400">
-
-                           {ac.user ? (
-                            <span className="text-blue-400 uppercase tracking-tighter">{ac.user}</span>
-                          ) : (
-                           <span className="italic opacity-30">Unassigned Node</span>
-                          )}
-                          
-                        </div>
-                      </td>
-                      <td className="py-5 px-2 text-center">
-                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-                           <BarChart3 size={12} className="text-emerald-500" />
-                           <span className="text-[11px] font-black text-emerald-400 tracking-tight">₦{Number(ac.totalEarned || 0).toLocaleString()}</span>
-                         </div>
-                      </td>
-                      <td className="py-5 px-2 text-right">
-                        <div className="flex justify-end gap-2">
-                           
-                          <button 
-                            onClick={() => handleDeleteCode(ac.code)}
-                            className="p-2 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-                            title="Delete Node"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                            <button onClick={() => handleDeleteCode(ac.code)} className="p-2 bg-red-500/10 text-red-500 rounded-lg">
+                              <Trash2 size={14} />
+                            </button>
+                         </td>
+                       </tr>
+                     ))}
+                   </tbody>
+                 </table>
+               </div>
+             </div>
           </div>
         </div>
 
         {/* Analytics Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-           <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:bg-white/[0.08] transition-all">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 mb-20">
+           <div className="bg-[#111] border border-white/10 p-8 rounded-[2rem] flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total Gross Volume</p>
-                <h3 className="text-3xl font-black tracking-tighter text-white">₦{Array.isArray(submissions) ? submissions.reduce((acc, curr) => acc + (Number(curr.price) || 0), 0).toLocaleString() : '0'}</h3>
+                <h3 className="text-3xl font-black tracking-tighter text-white">₦{totalVolume.toLocaleString()}</h3>
               </div>
               <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg shadow-blue-500/5">
                 <TrendingUp size={28} />
               </div>
            </div>
-            <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:bg-white/[0.08] transition-all">
+            <div className="bg-[#111] border border-white/10 p-8 rounded-[2rem] flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Network Earnings</p>
-                <h3 className="text-3xl font-black tracking-tighter text-white">₦{Array.isArray(accessCodes) ? accessCodes.reduce((acc, curr) => acc + (Number(curr.totalEarned) || 0), 0).toLocaleString() : '0'}</h3>
+                <h3 className="text-3xl font-black tracking-tighter text-white">₦{totalNetworkEarnings.toLocaleString()}</h3>
               </div>
               <div className="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 border border-purple-500/20 shadow-lg shadow-purple-500/5">
                 <BarChart3 size={28} />
               </div>
            </div>
-           <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:bg-white/[0.08] transition-all">
+           <div className="bg-[#111] border border-white/10 p-8 rounded-[2rem] flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Network Latency</p>
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Node Efficiency</p>
                 <div className="flex items-end gap-2">
-                  <h3 className="text-3xl font-black tracking-tighter text-white">0.18</h3>
-                  <span className="text-xs font-black text-emerald-500 mb-1.5 uppercase">ms</span>
+                  <h3 className="text-3xl font-black tracking-tighter text-white">99.4</h3>
+                  <span className="text-xs font-black text-emerald-500 mb-1.5 uppercase">%</span>
                 </div>
               </div>
               <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
@@ -790,7 +626,7 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2rem] flex flex-col justify-center text-left">
+                <div className="flex-1 bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2rem] flex flex-col justify-center text-left text-white">
                   <div className="flex items-center gap-2 text-blue-100/60 font-bold text-[10px] uppercase tracking-widest mb-2">
                     <Wallet size={12} /> Liquid Balance
                   </div>
