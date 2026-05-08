@@ -672,7 +672,7 @@ export default function AdminPage() {
                                  <Eye size={14} />{ac.code}
                                </button>
                             )}
-                        <div className="font-mono text-xl font-black text-white tracking-widest"></div>
+                        <div className="font-mono text-xl font-black text-white tracking-widest">{ac.code}</div>
                       </td>
                       <td className="py-5 px-2">
                         <div className="text-xs font-bold text-slate-400">
