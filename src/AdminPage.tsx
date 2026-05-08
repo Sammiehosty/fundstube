@@ -666,11 +666,22 @@ export default function AdminPage() {
                       </td>
                       <td className="py-5 px-2">
                         <div className="text-xs font-bold text-slate-400">
-                          {ac.user ? (
+                           {ac.user && (
+                               <button 
+                                onClick={async () => {
+                                  const freshProfile = await db.getProfile(ac.code);
+                                  setInspectingCode({ ...ac, profile: freshProfile });
+                                }}
+                                className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
+                               >
+                                 <Eye size={14} />  {ac.user ? (
                             <span className="text-blue-400 uppercase tracking-tighter">{ac.user}</span>
                           ) : (
                             <span className="italic opacity-30">Unassigned Node</span>
                           )}
+                               </button>
+                            )}
+                         
                         </div>
                       </td>
                       <td className="py-5 px-2 text-center">
@@ -681,17 +692,7 @@ export default function AdminPage() {
                       </td>
                       <td className="py-5 px-2 text-right">
                         <div className="flex justify-end gap-2">
-                            {ac.user && (
-                               <button 
-                                onClick={async () => {
-                                  const freshProfile = await db.getProfile(ac.code);
-                                  setInspectingCode({ ...ac, profile: freshProfile });
-                                }}
-                                className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
-                               >
-                                 <Eye size={14} /> View Logs
-                               </button>
-                            )}
+                           
                           <button 
                             onClick={() => handleDeleteCode(ac.code)}
                             className="p-2 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
