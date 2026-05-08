@@ -408,7 +408,7 @@ export default function UserDashboard() {
   };
 
   const playSuccessSound = () => {
-    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+    const audio = new Audio('http://receipt.sammiehost.com/meldix-success-340660.mp3');
     audio.volume = 0.5;
     audio.play().catch(e => console.error("Audio play failed:", e));
   };
@@ -600,7 +600,7 @@ export default function UserDashboard() {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/10">
-              <span className="font-black italic text-white text-base">F</span>
+              <span className="font-black italic text-white text-base">₦</span>
             </div>
             <span className="font-bold tracking-tight text-lg hidden md:block text-slate-200">{adminSettings?.appName || 'Terminal'}</span>
           </div>
