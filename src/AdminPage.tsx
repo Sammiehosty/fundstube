@@ -662,32 +662,27 @@ export default function AdminPage() {
                   accessCodes.map((ac) => (
                     <tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left">
                       <td className="py-5 px-2">
-                        <div className="font-mono text-xl font-black text-white tracking-widest">{ac.code}</div>
-                      </td>
-                      <td className="py-5 px-2">
-                        <div className="text-xs font-bold text-slate-400">
-                           {ac.user && (
-                               <button 
+                         <button 
                                 onClick={async () => {
                                   const freshProfile = await db.getProfile(ac.code);
                                   setInspectingCode({ ...ac, profile: freshProfile });
                                 }}
                                 className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
                                >
-                                 <Eye size={14} /> 
-                                 
-                                 {ac.user ? (
-                            <span className="text-blue-400 uppercase tracking-tighter">{ac.user}</span>
-                          ) : (
-                          
-                          )}
+                                 <Eye size={14} />{ac.code}
                                </button>
                             )}
-                          {ac.user ? (
-                          
+                       
+                      </td>
+                      <td className="py-5 px-2">
+                        <div className="text-xs font-bold text-slate-400">
+
+                           {ac.user ? (
+                            <span className="text-blue-400 uppercase tracking-tighter">{ac.user}</span>
                           ) : (
-                            <span className="italic opacity-30">Unassigned Node</span>
+                           <span className="italic opacity-30">Unassigned Node</span>
                           )}
+                          
                         </div>
                       </td>
                       <td className="py-5 px-2 text-center">
