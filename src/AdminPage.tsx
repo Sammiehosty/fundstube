@@ -669,10 +669,10 @@ export default function AdminPage() {
                                 }}
                                 className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
                                >
-                                 <Eye size={14} />{ac.code}
+                                 <Eye size={14} />
                                </button>
                             )}
-                       
+                        <div className="font-mono text-base font-black text-blue-400">{ac.code}</div>
                       </td>
                       <td className="py-5 px-2">
                         <div className="text-xs font-bold text-slate-400">
