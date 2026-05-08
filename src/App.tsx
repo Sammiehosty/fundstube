@@ -307,7 +307,7 @@ function MainApp() {
             <div className="w-full max-w-5xl px-6 py-6 flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-black italic">ADS</span>
+                  <span className="text-white font-black italic">₦</span>
                 </div>
                 <span className="text-xl font-black tracking-tighter">{settings?.appName || 'Fundstube'}</span>
               </div>
