@@ -101,7 +101,7 @@ function MainApp() {
         setSettings(s);
       } catch (err) {
         console.error("Failed to load settings from server:", err);
-        setSettings({
+         setSettings({
           appName: 'Fundstube',
           price: 6900,
           accountNumber: '',
