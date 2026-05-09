@@ -453,7 +453,7 @@ export default function AdminPage() {
               </div>
 
               <form onSubmit={handleUpdateSettings} className="space-y-6 text-left max-h-[400px] overflow-y-auto">
-                <div className="space-y-6">
+                 <div className="space-y-6">
                   <div>
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Access Code Price (₦)</label>
                     <input 
@@ -500,7 +500,7 @@ export default function AdminPage() {
                     />
                   </div>
                   
-                    <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl mt-4">
+                  <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl mt-4">
                     <div className="flex flex-col">
                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Auto-Approve Payments</label>
                       <p className="text-[8px] text-slate-600 font-bold">Generate codes automatically</p>
@@ -515,7 +515,19 @@ export default function AdminPage() {
                       {settings?.autoApprovePayments ? 'Enabled (YES)' : 'Disabled (NO)'}
                     </button>
                   </div>
-                  <div className="mt-6 pt-6 border-t border-white/5">
+
+                  <div className="mt-6">
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-emerald-500">Global USDT Wallet (TRC20)</label>
+                    <input 
+                      type="text" 
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-emerald-400 font-mono text-[10px]"
+                      placeholder="Enter TRC20 Wallet Address"
+                      value={settings?.adminUsdtWallet || ''}
+                      onChange={(e) => setSettings(prev => prev ? {...prev, adminUsdtWallet: e.target.value} : null)}
+                    />
+                  </div>
+
+                  <div className="mt-6">
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Telegram Link</label>
                     <input 
                       type="text" 
@@ -524,6 +536,7 @@ export default function AdminPage() {
                       onChange={(e) => setSettings(prev => prev ? {...prev, telegramLink: e.target.value} : null)}
                     />
                   </div>
+
                   <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl mt-4">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Community Popup</label>
                     <button 
@@ -536,12 +549,13 @@ export default function AdminPage() {
                       {settings?.communityPopupEnabled ? 'Enabled' : 'Disabled'}
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 mt-6">
+
+                  <div className="grid grid-cols-2 gap-4 mt-4">
                     <div>
                       <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-[8px]">Min Bank (₦)</label>
                       <input 
                         type="number" 
-                        className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs"
+                        className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs text-white"
                         value={settings?.minWithdrawalBank || 0}
                         onChange={(e) => setSettings(prev => prev ? {...prev, minWithdrawalBank: parseInt(e.target.value)} : null)}
                       />
@@ -550,40 +564,29 @@ export default function AdminPage() {
                       <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-[8px]">Min USDT ($)</label>
                       <input 
                         type="number" 
-                        className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs"
+                        className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs text-white"
                         value={settings?.minWithdrawalUsdt || 0}
                         onChange={(e) => setSettings(prev => prev ? {...prev, minWithdrawalUsdt: parseInt(e.target.value)} : null)}
                       />
                     </div>
                   </div>
-                  <div className="mt-6">
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-emerald-500">Global USDT Wallet (TRC20)</label>
-                    <input 
-                      type="text" 
-                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-emerald-400 font-mono text-[10px]"
-                      placeholder="Enter TRC20 Wallet Address"
-                      value={settings?.adminUsdtWallet || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, adminUsdtWallet: e.target.value} : null)}
-                    />
-                  </div>
-                  <div className="mt-8 pt-6 border-t border-white/5">
+
+                  <div className="pt-6 border-t border-white/5 mt-4">
                     <div className="flex items-center gap-2 mb-4">
                       <Headset size={14} className="text-blue-500" />
-                      <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Support Integration</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Live Support Integration</h4>
                     </div>
-                    
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Script Code</label>
+                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Integration Code (Script)</label>
                         <textarea 
-                          rows={3}
-                          placeholder="Paste widget script here..."
+                          rows={4}
+                          placeholder="Paste support script here..."
                           className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-mono text-[10px] px-6 focus:border-blue-500/50 transition-all text-slate-300"
                           value={settings?.supportCode || ''}
                           onChange={(e) => setSettings(prev => prev ? {...prev, supportCode: e.target.value} : null)}
                         />
                       </div>
-                      
                       <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Support Status</label>
                         <button 
@@ -599,7 +602,7 @@ export default function AdminPage() {
                     </div>
                   </div>
                 </div>
-                  </div>
+
                 <div className="pt-4 space-y-3">
                   <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] text-white">
                     Apply Updates
