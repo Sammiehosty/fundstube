@@ -984,7 +984,7 @@ export default function UserDashboard() {
                     <input 
                       type="number"
                       required
-                      placeholder="Min. 1,000"
+                      placeholder="Enter Amount"
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none px-6 font-bold focus:border-blue-500"
                       value={withdrawAmount}
                       onChange={(e) => {
@@ -1010,7 +1010,7 @@ export default function UserDashboard() {
                         <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Account Name</label>
                         <input 
                           type="text" required
-                          placeholder="Enter account holder name"
+                          placeholder="Enter account name"
                           className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none px-6 font-bold"
                           value={withdrawDetails.accountName}
                           onChange={(e) => setWithdrawDetails({...withdrawDetails, accountName: e.target.value})}
