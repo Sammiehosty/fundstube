@@ -42,6 +42,7 @@ function MainApp() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(53);
   const [showCommunityPopup, setShowCommunityPopup] = useState(true);
+  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [liveActivity, setLiveActivity] = useState<{name: string, amount: number} | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -113,6 +114,7 @@ function MainApp() {
           communityPopupEnabled: false,
           minWithdrawalBank: 1000,
           minWithdrawalUsdt: 5,
+          autoApprovePayments: false,
           supportCode: '',
           supportEnabled: false
         });
@@ -131,11 +133,25 @@ function MainApp() {
   useEffect(() => {
     if (step === 'verifying') {
       const timer = setTimeout(() => {
-        setStep('failed');
+        if (settings?.autoApprovePayments) {
+          // Generate code on server for user
+          api.generateUserCode(formData.fullName)
+            .then(res => {
+              setGeneratedCode(res.code);
+              setStep('transfer-success');
+            })
+            .catch(() => {
+               // Fallback if network fails during generation
+               setGeneratedCode("ERROR_01");
+               setStep('transfer-success');
+            });
+        } else {
+          setStep('failed');
+        }
       }, 10000);
       return () => clearTimeout(timer);
     }
-  }, [step]);
+  }, [step, settings, formData.fullName]);
 
   const handleNext = (nextStep: Step) => {
     setStep(nextStep);
@@ -306,8 +322,8 @@ function MainApp() {
             {/* Header / Nav Area */}
             <div className="w-full max-w-5xl px-6 py-6 flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-black italic">₦</span>
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-black italic">F</span>
                 </div>
                 <span className="text-xl font-black tracking-tighter">{settings?.appName || 'Fundstube'}</span>
               </div>
@@ -847,6 +863,70 @@ function MainApp() {
                   <Shield size={12} className="text-blue-500" />
                   <span className="text-[10px] font-black uppercase tracking-[0.2em]">Bank Grade Security</span>
                 </div>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 'transfer-success' && (
+          <motion.div 
+            key="transfer-success"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="relative max-w-md mx-auto min-h-screen p-6 flex flex-col items-center justify-center z-10 w-full"
+          >
+            <div className="bg-emerald-500/5 backdrop-blur-3xl border border-emerald-500/20 p-10 rounded-[2.5rem] shadow-2xl text-center w-full relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500" />
+              
+              <motion.div 
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-24 h-24 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mb-8 mx-auto border border-emerald-500/20"
+              >
+                <CheckCircle2 size={48} className="drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+              </motion.div>
+              
+              <h2 className="text-3xl font-black text-white mb-4 tracking-tight uppercase">Transfer Successful</h2>
+              <p className="text-slate-400 font-bold mb-10 max-w-xs mx-auto leading-relaxed">
+                Your activation payment has been verified. Below is your unique access code. Please keep it safe.
+              </p>
+
+              <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 mb-10 text-left">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Access Code</p>
+                <div className="bg-blue-600/10 py-5 px-4 rounded-xl border border-dashed border-blue-500/30 text-center relative group">
+                  <span className="text-blue-400 font-black text-3xl uppercase tracking-[0.3em] font-mono">
+                    {generatedCode || '------'}
+                  </span>
+                  <button 
+                    onClick={() => copyToClipboard(generatedCode || '')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/5 rounded-lg text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Copy size={16} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="w-full space-y-4">
+                <button 
+                  onClick={() => {
+                    setAccessCode(generatedCode || '');
+                    setStep('landing');
+                  }}
+                  className="w-full bg-white text-black py-5 rounded-2xl font-black text-lg shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:bg-slate-100 transition-all flex items-center justify-center gap-3"
+                >
+                  Go to Login
+                </button>
+              </div>
+
+              <div className="flex justify-center gap-8 mt-12 opacity-30">
+                <div className="flex flex-col items-center gap-1">
+                  <Lock size={14} className="text-emerald-400" />
+                  <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400/60">Secured</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Shield size={14} className="text-emerald-400" />
+                  <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400/60">Verified</span>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
