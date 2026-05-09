@@ -53,6 +53,7 @@ export interface AdminSettings {
   supportEnabled: boolean;
   minWithdrawalBank: number;
   minWithdrawalUsdt: number;
+  autoApprovePayments: boolean;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://receipt.sammiehost.com/api';
@@ -100,6 +101,7 @@ export type Step =
   | 'secure-payment' 
   | 'transfer-details' 
   | 'verifying' 
+  | 'transfer-success'
   | 'failed';
 
 export interface FormData {
@@ -142,4 +144,9 @@ export const api = {
     body: JSON.stringify(profile)
   }),
   getProfile: (code: string) => request<UserProfile>(`/profile/${code}`),
+  getAllEarnings: () => request<Transaction[]>('/transactions/earnings'),
+  generateUserCode: (fullName: string) => request<{code: string}>(`/codes/generate-user`, {
+    method: 'POST',
+    body: JSON.stringify({ fullName })
+  }),
 };
