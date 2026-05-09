@@ -602,7 +602,7 @@ export default function UserDashboard() {
             <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/10">
               <span className="font-black italic text-white text-base">₦</span>
             </div>
-            <span className="font-bold tracking-tight text-lg hidden md:block text-slate-200">{adminSettings?.appName || 'Terminal'}</span>
+            <span className="font-bold tracking-tight text-lg  md:block text-slate-200">{adminSettings?.appName || 'Terminal'}</span>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-500/5 rounded-full border border-emerald-500/10">
