@@ -804,7 +804,7 @@ export default function AdminPage() {
                     </div>
                   </div>
                 </div>
-                <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2">
+                <div className="max-h-[200px] overflow-y-auto space-y-3 pr-2">
                   {Array.isArray(inspectingCode.profile.transactions) ? inspectingCode.profile.transactions.map((tx) => (
                     <div key={tx.id} className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:bg-white/[0.05] transition-all">
                       <div className="flex items-center gap-4">
