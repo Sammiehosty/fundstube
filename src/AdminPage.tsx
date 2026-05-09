@@ -397,8 +397,8 @@ export default function AdminPage() {
                 </button>
               </div>
 
-              <div className="overflow-x-auto text-left">
-                <table className="w-full border-collapse  max-h-[150px] overflow-y-auto">
+              <div className="overflow-x-auto text-left max-h-[150px] overflow-y-auto">
+                <table className="w-full border-collapse ">
                   <thead>
                     <tr className="border-b border-white/5 text-[9px] text-slate-500 font-black uppercase tracking-widest">
                       <th className="text-left py-4 px-2">Participant</th>
