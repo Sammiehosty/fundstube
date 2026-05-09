@@ -398,7 +398,7 @@ export default function AdminPage() {
               </div>
 
               <div className="overflow-x-auto text-left">
-                <table className="w-full border-collapse">
+                <table className="w-full border-collapse  max-h-[150px] overflow-y-auto">
                   <thead>
                     <tr className="border-b border-white/5 text-[9px] text-slate-500 font-black uppercase tracking-widest">
                       <th className="text-left py-4 px-2">Participant</th>
@@ -407,7 +407,7 @@ export default function AdminPage() {
                       <th className="text-right py-4 px-2">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5 max-h-[150px] overflow-y-auto">
+                  <tbody className="divide-y divide-white/5 ">
                     {!Array.isArray(earningsHistory) || earningsHistory.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="py-12 text-center text-slate-700 font-bold uppercase tracking-widest text-[10px]">No recent reward sequences detected</td>
@@ -452,7 +452,7 @@ export default function AdminPage() {
                 <h2 className="text-xl font-black tracking-tight text-white uppercase">Configuration</h2>
               </div>
 
-              <form onSubmit={handleUpdateSettings} className="space-y-6 text-left max-h-[200px] overflow-y-auto">
+              <form onSubmit={handleUpdateSettings} className="space-y-6 text-left max-h-[400px] overflow-y-auto">
                 <div className="space-y-6">
                   <div>
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Access Code Price (₦)</label>
