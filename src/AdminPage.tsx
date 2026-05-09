@@ -361,7 +361,7 @@ export default function AdminPage() {
                 <h2 className="text-xl font-black tracking-tight">System Configuration</h2>
               </div>
 
-              <form onSubmit={handleUpdateSettings} className="space-y-6 overflow-x-auto  max-h-[400px] ">
+              <form onSubmit={handleUpdateSettings} className="space-y-6 overflow-x-auto  max-h-[500px] ">
                 <div className="space-y-6">
                   <div>
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Access Code Price (₦)</label>
@@ -549,7 +549,7 @@ export default function AdminPage() {
                 </button>
               </div>
 
-              <div className="overflow-x-auto flex-grow text-left">
+              <div className="overflow-x-auto flex-grow text-left max-h-[400px] ">
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
@@ -591,21 +591,7 @@ export default function AdminPage() {
                           <td className="py-5 px-2 text-right">
                             <div className="flex flex-col items-end gap-2">
                                <div className="font-black text-white tracking-tighter">₦{Number(sub.price || 0).toLocaleString()}</div>
-                               <button 
-                                onClick={async () => {
-                                  // Attempt to find a code that matches this submission (by email or phone)
-                                  const matchingCode = accessCodes.find(c => c.user === sub.fullName);
-                                  if (matchingCode) {
-                                    const freshProfile = await db.getProfile(matchingCode.code);
-                                    setInspectingCode({ ...matchingCode, profile: freshProfile });
-                                  } else {
-                                    showToast("No active node for this user yet", "error");
-                                  }
-                                }}
-                                className="px-2 py-1 bg-white/5 border border-white/10 rounded-md text-[8px] font-black uppercase text-slate-400 hover:text-white hover:bg-white/10 transition-all"
-                               >
-                                 View User Log
-                               </button>
+                               
                             </div>
                           </td>
                         </tr>
