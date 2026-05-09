@@ -638,7 +638,7 @@ export default function AdminPage() {
             </button>
           </div>
 
-          <div className="overflow-x-auto text-left">
+          <div className="overflow-y-auto text-left" >
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
