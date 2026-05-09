@@ -741,7 +741,7 @@ export default function AdminPage() {
       {/* User Inspection Modal */}
       <AnimatePresence>
         {inspectingCode && inspectingCode.profile && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md overflow-y-auto overflow-x-auto  max-h-[700px] ">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md overflow-y-auto ">
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -782,11 +782,11 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2rem] flex flex-col justify-center text-left">
+                <div className="flex-1 bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-[2rem] flex flex-col justify-center text-left">
                   <div className="flex items-center gap-2 text-blue-100/60 font-bold text-[10px] uppercase tracking-widest mb-2">
                     <Wallet size={12} /> Liquid Balance
                   </div>
-                  <h4 className="text-4xl font-black tracking-tighter mb-4 text-white">₦{(Number(inspectingCode.profile.balance) || 0).toLocaleString()}</h4>
+                  <h4 className="text-4xl font-black tracking-tighter mb-2 text-white">₦{(Number(inspectingCode.profile.balance) || 0).toLocaleString()}</h4>
                   <div className="h-0.5 w-full bg-white/10 my-4" />
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-black uppercase text-blue-100/60">Lifetime Earnings</span>
@@ -800,11 +800,11 @@ export default function AdminPage() {
                   <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Account Activity</h4>
                   <div className="flex gap-2">
                     <div className="px-2 py-1 bg-emerald-500/10 rounded-md border border-emerald-500/20">
-                      <span className="text-[8px] font-black text-emerald-500 uppercase">Earnings Log</span>
+                      <span className="text-[6px] font-black text-emerald-500 uppercase">Earnings Log</span>
                     </div>
                   </div>
                 </div>
-                <div className="max-h-[200px] overflow-y-auto space-y-3 pr-2">
+                <div className="max-h-[150px] overflow-y-auto space-y-3 pr-2">
                   {Array.isArray(inspectingCode.profile.transactions) ? inspectingCode.profile.transactions.map((tx) => (
                     <div key={tx.id} className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:bg-white/[0.05] transition-all">
                       <div className="flex items-center gap-4">
