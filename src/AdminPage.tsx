@@ -449,7 +449,7 @@ export default function AdminPage() {
                 <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
                   <Settings size={20} />
                 </div>
-                <h2 className="text-xl font-black tracking-tight text-white uppercase">Configuration</h2>
+                <h2 className="text-xl font-black tracking-tight text-white uppercase">System Configuration</h2>
               </div>
 
               <form onSubmit={handleUpdateSettings} className="space-y-6 text-left max-h-[400px] overflow-y-auto">
@@ -610,77 +610,146 @@ export default function AdminPage() {
           </div>
 
           {/* Submissions & Nodes Table */}
-          <div className="lg:col-span-2 space-y-8">
-             {/* Submissions */}
-             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
-               <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-xl font-black uppercase text-white">Access Log</h2>
-                  <span className="text-[10px] font-black text-slate-500 uppercase">{Array.isArray(submissions) ? submissions.length : 0} Leads</span>
-               </div>
-               <div className="overflow-x-auto text-left">
-                 <table className="w-full border-collapse">
-                   <tbody className="divide-y divide-white/5">
-                     {submissions.slice(0, 10).map((sub) => (
-                       <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
-                         <td className="py-4 px-2">
-                           <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
-                           <div className="text-[9px] text-slate-600 font-bold">{sub.phone}</div>
-                         </td>
-                         <td className="py-4 px-2 text-right">
-                            <div className="flex flex-col items-end gap-1">
-                               <div className="font-black text-white text-xs">₦{Number(sub.price || 0).toLocaleString()}</div>
-                               <button 
-                                onClick={async () => {
-                                  const matchingCode = accessCodes.find(c => c.user === sub.fullName);
-                                  if (matchingCode) {
-                                    const freshProfile = await db.getProfile(matchingCode.code);
-                                    setInspectingCode({ ...matchingCode, profile: freshProfile });
-                                  } else {
-                                    showToast("No active node for this user", "error");
-                                  }
-                                }}
-                                className="px-4 py-2 bg-blue-600/20 border border-blue-500/50 rounded-lg text-[10px] font-black uppercase text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-lg"
-                               >
-                                 <Eye size={12} /> View Logs
-                               </button>
-                            </div>
-                         </td>
-                       </tr>
-                     ))}
-                   </tbody>
-                 </table>
-               </div>
-             </div>
+          <div className="lg:col-span-2">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl h-full flex flex-col">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
+                    <Database size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black tracking-tight">Access Log</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{Array.isArray(submissions) ? submissions.length : 0} Total Captures</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={clearSubmissions}
+                  className="px-5 py-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest"
+                >
+                  <Trash2 size={14} /> Wipe Records
+                </button>
+              </div>
 
-             {/* Active Access Codes */}
-             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
-               <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-xl font-black uppercase text-white">Active Nodes</h2>
-                  <button onClick={handleGenerateCode} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase">
-                    New Code
-                  </button>
-               </div>
-               <div className="overflow-x-auto text-left">
-                 <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
-                        <th className="py-4 px-2 text-left">Key</th>
-                        <th className="py-4 px-2 text-left">Owner</th>
-                        <th className="py-4 px-2 text-right">Action</th>
+              <div className="overflow-x-auto flex-grow text-left max-h-[400px] ">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                      <th className="text-left py-4 px-2 text-left">Time/Date</th>
+                      <th className="text-left py-4 px-2 text-left">User Identification</th>
+                      <th className="text-left py-4 px-2 text-left">Contact</th>
+                      <th className="text-right py-4 px-2 text-right">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {!Array.isArray(submissions) || submissions.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="py-32 text-center">
+                           <Database className="mx-auto text-slate-800 mb-4" size={48} />
+                           <p className="text-slate-600 font-black uppercase tracking-[0.3em] text-[10px]">Database Empty</p>
+                        </td>
                       </tr>
-                    </thead>
-                   <tbody className="divide-y divide-white/5">
-                     {accessCodes.map((ac) => (
-                       <tr key={ac.code} className="group hover:bg-white/[0.02] transition-all">
-                         <td className="py-4 px-2">
-                           <div className="font-mono text-base font-black text-blue-400">{ac.code}</div>
-                         </td>
-                         <td className="py-4 px-2">
-                            <div className="font-black text-xs text-white uppercase">{ac.user || 'Unassigned'}</div>
-                            <div className="text-[9px] text-emerald-500 font-bold">₦{Number(ac.totalEarned || 0).toLocaleString()}</div>
-                         </td>
-                         <td className="py-4 px-2 text-right flex justify-end gap-2">
-                            {ac.user && (
+                    ) : (
+                      submissions.map((sub) => (
+                        <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all text-left">
+                          <td className="py-5 px-2">
+                            <div className="text-xs font-black text-white">
+                              {sub.timestamp ? new Date(Number(sub.timestamp)).toLocaleDateString() : 'N/A'}
+                            </div>
+                            <div className="text-[10px] text-slate-500 font-bold mt-0.5">
+                              {sub.timestamp ? new Date(Number(sub.timestamp)).toLocaleTimeString() : 'N/A'}
+                            </div>
+                          </td>
+                          <td className="py-5 px-2">
+                            <div className="font-black text-sm text-blue-400 group-hover:text-blue-300 transition-colors uppercase">{sub.fullName}</div>
+                            <div className="text-[10px] text-slate-500 font-bold tracking-tight lowercase">{sub.email}</div>
+                          </td>
+                          <td className="py-5 px-2 text-left">
+                            <div className="text-xs font-black flex items-center gap-1.5 text-slate-300">
+                              <Phone size={10} className="text-blue-500" /> {sub.phone}
+                            </div>
+                            <div className="text-[10px] text-slate-600 font-bold mt-1 uppercase tracking-tighter">Region: {sub.country}</div>
+                          </td>
+                          <td className="py-5 px-2 text-right">
+                            <div className="flex flex-col items-end gap-2">
+                               <div className="font-black text-white tracking-tighter">₦{Number(sub.price || 0).toLocaleString()}</div>
+                               
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+             {/* Access Code Management */}
+        <div className="mt-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
+                <Key size={20} />
+              </div>
+              <div>
+                <h2 className="text-xl font-black tracking-tight">Access Codes</h2>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{Array.isArray(accessCodes) ? accessCodes.length : 0} Active Nodes</p>
+              </div>
+            </div>
+            <button 
+              onClick={handleGenerateCode}
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2"
+            >
+              <Plus size={16} /> Generate New Code
+            </button>
+          </div>
+
+          <div className="overflow-x-auto text-left max-h-[500px] overflow-y-auto space-y-3 pr-2"  >
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                  <th className="text-left py-4 px-2 text-left">Access Key</th>
+                  <th className="text-left py-4 px-2 text-left">Node Owner</th>
+                  <th className="text-center py-4 px-2">Earning</th>
+					 <th className="text-center py-4 px-2">Profile</th>
+                  <th className="text-right py-4 px-2 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="py-20 text-center text-blue-500 font-black uppercase tracking-widest text-[10px] animate-pulse">Syncing Node DB...</td>
+                  </tr>
+                ) : !Array.isArray(accessCodes) || accessCodes.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-12 text-center text-slate-600 font-bold uppercase tracking-widest text-[10px]">No codes generated</td>
+                  </tr>
+                ) : (
+                  accessCodes.map((ac) => (
+                    <tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left">
+                      <td className="py-5 px-2">
+						    <span className="font-mono text-xl font-black text-white tracking-widest">{ac.code}</span>
+                       </td>
+                      <td className="py-5 px-2">
+                        <div className="text-xs font-bold text-slate-400">
+                          {ac.user ? (
+                            <span className="text-blue-400 uppercase tracking-tighter">{ac.user}</span>
+                          ) : (
+                            <span className="italic opacity-30">Unassigned Node</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-5 px-2 text-center">
+                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                           <BarChart3 size={12} className="text-emerald-500" />
+                           <span className="text-[11px] font-black text-emerald-400 tracking-tight">₦{Number(ac.totalEarned || 0).toLocaleString()}</span>
+                         </div>
+                      </td>
+
+						   <td className="py-5 px-2 text-right">
+                        <div className="flex justify-end gap-2">
+						{ac.user && (
                                <button 
                                 onClick={async () => {
                                   const freshProfile = await db.getProfile(ac.code);
@@ -688,48 +757,59 @@ export default function AdminPage() {
                                 }}
                                 className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
                                >
-                                 <Eye size={14} /> View Logs
+                                 <Eye size={14} />
                                </button>
                             )}
-                            <button onClick={() => handleDeleteCode(ac.code)} className="p-2 bg-red-500/10 text-red-500 rounded-lg">
-                              <Trash2 size={14} />
-                            </button>
-                         </td>
-                       </tr>
-                     ))}
-                   </tbody>
-                 </table>
-               </div>
-             </div>
+
+						</div>
+                      </td>
+						
+                      <td className="py-5 px-2 text-right">
+                        <div className="flex justify-end gap-2">
+                          
+                          <button 
+                            onClick={() => handleDeleteCode(ac.code)}
+                            className="p-2 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                            title="Delete Node"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 
         {/* Analytics Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 mb-20">
-           <div className="bg-[#111] border border-white/10 p-8 rounded-[2rem] flex items-center justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+           <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:bg-white/[0.08] transition-all">
               <div>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total Gross Volume</p>
-                <h3 className="text-3xl font-black tracking-tighter text-white">₦{totalVolume.toLocaleString()}</h3>
+                <h3 className="text-3xl font-black tracking-tighter text-white">₦{Array.isArray(submissions) ? submissions.reduce((acc, curr) => acc + (Number(curr.price) || 0), 0).toLocaleString() : '0'}</h3>
               </div>
               <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg shadow-blue-500/5">
                 <TrendingUp size={28} />
               </div>
            </div>
-            <div className="bg-[#111] border border-white/10 p-8 rounded-[2rem] flex items-center justify-between">
+            <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:bg-white/[0.08] transition-all">
               <div>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Network Earnings</p>
-                <h3 className="text-3xl font-black tracking-tighter text-white">₦{totalNetworkEarnings.toLocaleString()}</h3>
+                <h3 className="text-3xl font-black tracking-tighter text-white">₦{Array.isArray(accessCodes) ? accessCodes.reduce((acc, curr) => acc + (Number(curr.totalEarned) || 0), 0).toLocaleString() : '0'}</h3>
               </div>
               <div className="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 border border-purple-500/20 shadow-lg shadow-purple-500/5">
                 <BarChart3 size={28} />
               </div>
            </div>
-           <div className="bg-[#111] border border-white/10 p-8 rounded-[2rem] flex items-center justify-between">
+           <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:bg-white/[0.08] transition-all">
               <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Node Efficiency</p>
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Network Latency</p>
                 <div className="flex items-end gap-2">
-                  <h3 className="text-3xl font-black tracking-tighter text-white">99.4</h3>
-                  <span className="text-xs font-black text-emerald-500 mb-1.5 uppercase">%</span>
+                  <h3 className="text-3xl font-black tracking-tighter text-white">0.18</h3>
+                  <span className="text-xs font-black text-emerald-500 mb-1.5 uppercase">ms</span>
                 </div>
               </div>
               <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
@@ -738,7 +818,6 @@ export default function AdminPage() {
            </div>
         </div>
       </div>
-
       {/* User Inspection Modal */}
       <AnimatePresence>
         {inspectingCode && inspectingCode.profile && (
