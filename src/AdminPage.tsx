@@ -800,7 +800,7 @@ export default function AdminPage() {
                   <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Account Activity</h4>
                   <div className="flex gap-2">
                     <div className="px-1 py-1 bg-emerald-500/10 rounded-md border border-emerald-500/20">
-                      <span className="text-[6px] font-black text-emerald-500 uppercase">Earnings Log</span>
+                      <span className="text-[10px] font-black text-emerald-500 uppercase">Earnings Log</span>
                     </div>
                   </div>
                 </div>
