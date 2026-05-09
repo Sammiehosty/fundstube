@@ -623,7 +623,7 @@ export default function AdminPage() {
                   <Trash2 size={14} /> Wipe Records
                 </button>
                </div>
-               <div className="overflow-x-auto text-left">
+               <div className="overflow-x-auto text-left max-h-[150px] overflow-y-auto">
                  <table className="w-full border-collapse">
 					  <thead>
                       <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
@@ -637,7 +637,8 @@ export default function AdminPage() {
                        <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
                          <td className="py-4 px-2">
                            <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
-                           <div className="text-[9px] text-slate-600 font-bold">{sub.phone}</div>
+                           <div className="text-[8px] text-slate-600 font-bold">{sub.phone}</div>
+							  <div className="text-[8px] text-slate-600 font-bold">{sub.email}</div>
                          </td>
 
 						    <td className="py-4 px-2">
@@ -660,7 +661,7 @@ export default function AdminPage() {
                                 }}
                                 className="px-4 py-2 bg-blue-600/20 border border-blue-500/50 rounded-lg text-[10px] font-black uppercase text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-lg"
                                >
-                                 <Eye size={12} /> View Logs
+                                 <Eye size={12} />
                                </button>
                             </div>
                          </td>
