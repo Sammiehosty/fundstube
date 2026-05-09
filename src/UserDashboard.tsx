@@ -634,7 +634,7 @@ export default function UserDashboard() {
           {/* Main Column */}
           <div className="lg:col-span-2 space-y-8">
             {/* Portfolio Overview */}
-            <section className="bg-[#111] border border-white/10 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden">
+            <section className="bg-[#111] border border-white/10 rounded-[2rem] p-4 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/5 blur-[100px] -mr-48 -mt-48 rounded-full pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-10">
@@ -672,7 +672,7 @@ export default function UserDashboard() {
             </section>
 
             {/* Earning Node Area */}
-            <section className="bg-[#111] border border-white/10 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden">
+            <section className="bg-[#111] border border-white/10 rounded-[2rem] p-4 shadow-2xl relative overflow-hidden">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 border border-blue-500/10">
@@ -760,7 +760,7 @@ export default function UserDashboard() {
             </section>
 
             {/* Transaction History */}
-            <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl">
+            <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-4 shadow-2xl">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-500">
