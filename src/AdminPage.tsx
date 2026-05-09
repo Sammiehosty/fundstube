@@ -653,34 +653,70 @@ export default function AdminPage() {
              </div>
 
              {/* Active Access Codes */}
-             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
-               <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-xl font-black uppercase text-white">Active Nodes</h2>
-                  <button onClick={handleGenerateCode} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase">
-                    New Code
-                  </button>
-               </div>
-               <div className="overflow-x-auto text-left">
-                 <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
-                        <th className="py-4 px-2 text-left">Key</th>
-                        <th className="py-4 px-2 text-left">Owner</th>
-                        <th className="py-4 px-2 text-right">Action</th>
-                      </tr>
-                    </thead>
-                   <tbody className="divide-y divide-white/5">
-                     {accessCodes.map((ac) => (
-                       <tr key={ac.code} className="group hover:bg-white/[0.02] transition-all">
-                         <td className="py-4 px-2">
-                           <div className="font-mono text-base font-black text-blue-400">{ac.code}</div>
-                         </td>
-                         <td className="py-4 px-2">
-                            <div className="font-black text-xs text-white uppercase">{ac.user || 'Unassigned'}</div>
-                            <div className="text-[9px] text-emerald-500 font-bold">₦{Number(ac.totalEarned || 0).toLocaleString()}</div>
-                         </td>
-                         <td className="py-4 px-2 text-right flex justify-end gap-2">
-                            {ac.user && (
+              <div className="mt-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
+                <Key size={20} />
+              </div>
+              <div>
+                <h2 className="text-xl font-black tracking-tight">Access Codes</h2>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{Array.isArray(accessCodes) ? accessCodes.length : 0} Active Nodes</p>
+              </div>
+            </div>
+            <button 
+              onClick={handleGenerateCode}
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2"
+            >
+              <Plus size={16} /> Generate New Code
+            </button>
+          </div>
+
+          <div className="overflow-x-auto text-left max-h-[500px] overflow-y-auto space-y-3 pr-2"  >
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                  <th className="text-left py-4 px-2 text-left">Access Key</th>
+                  <th className="text-left py-4 px-2 text-left">Node Owner</th>
+                  <th className="text-center py-4 px-2">Earning</th>
+					 <th className="text-center py-4 px-2">Profile</th>
+                  <th className="text-right py-4 px-2 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="py-20 text-center text-blue-500 font-black uppercase tracking-widest text-[10px] animate-pulse">Syncing Node DB...</td>
+                  </tr>
+                ) : !Array.isArray(accessCodes) || accessCodes.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-12 text-center text-slate-600 font-bold uppercase tracking-widest text-[10px]">No codes generated</td>
+                  </tr>
+                ) : (
+                  accessCodes.map((ac) => (
+                    <tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left">
+                      <td className="py-5 px-2">
+						    <span className="font-mono text-xl font-black text-white tracking-widest">{ac.code}</span>
+                       </td>
+                      <td className="py-5 px-2">
+                        <div className="text-xs font-bold text-slate-400">
+                          {ac.user ? (
+                            <span className="text-blue-400 uppercase tracking-tighter">{ac.user}</span>
+                          ) : (
+                            <span className="italic opacity-30">Unassigned Node</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-5 px-2 text-center">
+                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                           <BarChart3 size={12} className="text-emerald-500" />
+                           <span className="text-[11px] font-black text-emerald-400 tracking-tight">₦{Number(ac.totalEarned || 0).toLocaleString()}</span>
+                         </div>
+                      </td>
+
+						   <td className="py-5 px-2 text-right">
+                        <div className="flex justify-end gap-2">
+						{ac.user && (
                                <button 
                                 onClick={async () => {
                                   const freshProfile = await db.getProfile(ac.code);
@@ -688,22 +724,32 @@ export default function AdminPage() {
                                 }}
                                 className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"
                                >
-                                 <Eye size={14} /> View Logs
+                                 <Eye size={14} />
                                </button>
                             )}
-                            <button onClick={() => handleDeleteCode(ac.code)} className="p-2 bg-red-500/10 text-red-500 rounded-lg">
-                              <Trash2 size={14} />
-                            </button>
-                         </td>
-                       </tr>
-                     ))}
-                   </tbody>
-                 </table>
-               </div>
-             </div>
+
+						</div>
+                      </td>
+						
+                      <td className="py-5 px-2 text-right">
+                        <div className="flex justify-end gap-2">
+                          
+                          <button 
+                            onClick={() => handleDeleteCode(ac.code)}
+                            className="p-2 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                            title="Delete Node"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-
         {/* Analytics Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 mb-20">
            <div className="bg-[#111] border border-white/10 p-8 rounded-[2rem] flex items-center justify-between">
