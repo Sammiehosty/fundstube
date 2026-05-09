@@ -610,47 +610,80 @@ export default function AdminPage() {
           </div>
 
           {/* Submissions & Nodes Table */}
-          <div className="lg:col-span-2 space-y-8">
-             {/* Submissions */}
-             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
-               <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-xl font-black uppercase text-white">Access Log</h2>
-                  <span className="text-[10px] font-black text-slate-500 uppercase">{Array.isArray(submissions) ? submissions.length : 0} Leads</span>
-               </div>
-               <div className="overflow-x-auto text-left">
-                 <table className="w-full border-collapse">
-                   <tbody className="divide-y divide-white/5">
-                     {submissions.slice(0, 10).map((sub) => (
-                       <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
-                         <td className="py-4 px-2">
-                           <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
-                           <div className="text-[9px] text-slate-600 font-bold">{sub.phone}</div>
-                         </td>
-                         <td className="py-4 px-2 text-right">
-                            <div className="flex flex-col items-end gap-1">
-                               <div className="font-black text-white text-xs">₦{Number(sub.price || 0).toLocaleString()}</div>
-                               <button 
-                                onClick={async () => {
-                                  const matchingCode = accessCodes.find(c => c.user === sub.fullName);
-                                  if (matchingCode) {
-                                    const freshProfile = await db.getProfile(matchingCode.code);
-                                    setInspectingCode({ ...matchingCode, profile: freshProfile });
-                                  } else {
-                                    showToast("No active node for this user", "error");
-                                  }
-                                }}
-                                className="px-4 py-2 bg-blue-600/20 border border-blue-500/50 rounded-lg text-[10px] font-black uppercase text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-lg"
-                               >
-                                 <Eye size={12} /> View Logs
-                               </button>
+           <div className="lg:col-span-2">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl h-full flex flex-col">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20">
+                    <Database size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black tracking-tight">Access Log</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{Array.isArray(submissions) ? submissions.length : 0} Total Captures</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={clearSubmissions}
+                  className="px-5 py-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest"
+                >
+                  <Trash2 size={14} /> Wipe Records
+                </button>
+              </div>
+
+              <div className="overflow-x-auto flex-grow text-left max-h-[400px] ">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                      <th className="text-left py-4 px-2 text-left">Time/Date</th>
+                      <th className="text-left py-4 px-2 text-left">User Identification</th>
+                      <th className="text-left py-4 px-2 text-left">Contact</th>
+                      <th className="text-right py-4 px-2 text-right">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {!Array.isArray(submissions) || submissions.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="py-32 text-center">
+                           <Database className="mx-auto text-slate-800 mb-4" size={48} />
+                           <p className="text-slate-600 font-black uppercase tracking-[0.3em] text-[10px]">Database Empty</p>
+                        </td>
+                      </tr>
+                    ) : (
+                      submissions.map((sub) => (
+                        <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all text-left">
+                          <td className="py-5 px-2">
+                            <div className="text-xs font-black text-white">
+                              {sub.timestamp ? new Date(Number(sub.timestamp)).toLocaleDateString() : 'N/A'}
                             </div>
-                         </td>
-                       </tr>
-                     ))}
-                   </tbody>
-                 </table>
-               </div>
-             </div>
+                            <div className="text-[10px] text-slate-500 font-bold mt-0.5">
+                              {sub.timestamp ? new Date(Number(sub.timestamp)).toLocaleTimeString() : 'N/A'}
+                            </div>
+                          </td>
+                          <td className="py-5 px-2">
+                            <div className="font-black text-sm text-blue-400 group-hover:text-blue-300 transition-colors uppercase">{sub.fullName}</div>
+                            <div className="text-[10px] text-slate-500 font-bold tracking-tight lowercase">{sub.email}</div>
+                          </td>
+                          <td className="py-5 px-2 text-left">
+                            <div className="text-xs font-black flex items-center gap-1.5 text-slate-300">
+                              <Phone size={10} className="text-blue-500" /> {sub.phone}
+                            </div>
+                            <div className="text-[10px] text-slate-600 font-bold mt-1 uppercase tracking-tighter">Region: {sub.country}</div>
+                          </td>
+                          <td className="py-5 px-2 text-right">
+                            <div className="flex flex-col items-end gap-2">
+                               <div className="font-black text-white tracking-tighter">₦{Number(sub.price || 0).toLocaleString()}</div>
+                               
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
 
              {/* Active Access Codes */}
              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
