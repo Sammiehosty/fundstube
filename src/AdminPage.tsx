@@ -681,7 +681,7 @@ export default function AdminPage() {
                <div className="flex justify-between items-center mb-8">
                   <h2 className="text-xl font-black uppercase text-white">Active Nodes</h2>
                   <button onClick={handleGenerateCode} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase">
-                    Generate New Code
+                   + Generate New Code
                   </button>
                </div>
                <div className="overflow-x-auto text-left max-h-[400px] overflow-y-auto">
