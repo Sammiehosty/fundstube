@@ -679,7 +679,7 @@ export default function AdminPage() {
              {/* Active Access Codes */}
              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
                <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-xl font-black uppercase text-white">Active Nodes</h2>
+                  <h2 className="text-xl font-black uppercase text-white">Active Users</h2>
                   <button onClick={handleGenerateCode} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase">
                    + Generate New Code
                   </button>
