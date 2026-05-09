@@ -741,7 +741,7 @@ export default function AdminPage() {
       {/* User Inspection Modal */}
       <AnimatePresence>
         {inspectingCode && inspectingCode.profile && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md overflow-y-auto overflow-x-auto  max-h-[700px] ">
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
