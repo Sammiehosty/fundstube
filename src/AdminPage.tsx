@@ -361,7 +361,7 @@ export default function AdminPage() {
                 <h2 className="text-xl font-black tracking-tight">System Configuration</h2>
               </div>
 
-              <form onSubmit={handleUpdateSettings} className="space-y-6">
+              <form onSubmit={handleUpdateSettings} className="space-y-6 overflow-x-auto  max-h-[400px] ">
                 <div className="space-y-6">
                   <div>
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Access Code Price (₦)</label>
