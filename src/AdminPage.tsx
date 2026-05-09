@@ -426,6 +426,22 @@ export default function AdminPage() {
                       onChange={(e) => setSettings(prev => prev ? {...prev, adminPassword: e.target.value} : null)}
                     />
                   </div>
+					  <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl mt-4">
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Auto-Approve Payments</label>
+                      <p className="text-[8px] text-slate-600 font-bold">Generate codes automatically</p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setSettings(prev => prev ? {...prev, autoApprovePayments: !prev.autoApprovePayments} : null)}
+                      className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
+                        settings?.autoApprovePayments ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/20 text-rose-500 border border-rose-500/20'
+                      }`}
+                    >
+                      {settings?.autoApprovePayments ? 'Enabled (YES)' : 'Disabled (NO)'}
+                    </button>
+                  </div>
+                </div>
                   <div>
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-emerald-500">Global USDT Wallet (TRC20)</label>
                     <input 
