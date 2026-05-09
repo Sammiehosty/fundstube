@@ -768,10 +768,10 @@ export default function UserDashboard() {
                   </div>
                   <h3 className="text-xl font-black tracking-tight">Transaction History</h3>
                 </div>
-                <button className="text-[10px] font-black uppercase tracking-widest text-blue-500 hover:underline">View All</button>
+               
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-x-auto  max-h-[500px] ">
                 {transactions.length === 0 ? (
                   <div className="py-12 text-center text-slate-500 font-bold uppercase tracking-widest text-[10px]">No recent transactions</div>
                 ) : (
@@ -886,28 +886,7 @@ export default function UserDashboard() {
               </div>
             </div>
 
-            {/* Bonus Card */}
-            <div className="bg-emerald-600/10 border border-emerald-600/20 rounded-[2.5rem] p-8 text-center relative overflow-hidden group">
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-emerald-500/10 blur-2xl rounded-full" />
-              <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-600/20">
-                <Zap size={24} className="text-white" />
-              </div>
-              <h4 className="font-black mb-2 tracking-tight text-lg">Hourly Ads Bonus</h4>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-6">Claim ₦2,000 extra rewards</p>
-              
-              {bonusCountdown === null ? (
-                <button 
-                  onClick={startBonusTimer}
-                  className="w-full py-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-900/20"
-                >
-                  Start Countdown
-                </button>
-              ) : (
-                <div className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl font-mono text-xl font-black text-emerald-400">
-                  {formatTime(bonusCountdown)}
-                </div>
-              )}
-            </div>
+           
 
             {/* Support */}
             <div className="bg-blue-600/10 border border-blue-600/20 rounded-[2.5rem] p-8 text-center">
@@ -1133,14 +1112,14 @@ export default function UserDashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[10px] font-black text-slate-500 uppercase">Status</span>
-                    <span className="text-[10px] font-black text-amber-500 uppercase">Pending_Sync</span>
+                    <span className="text-[10px] font-black text-amber-500 uppercase">On the way</span>
                   </div>
                 </div>
               </div>
 
               <div className="bg-blue-500/10 p-5 rounded-2xl border border-blue-500/20 mb-10 text-center">
                  <p className="text-[10px] text-blue-200 font-bold leading-relaxed">
-                   Your node rewards are being routed through the secure gateway. Funds typically arrive at your destination node within 5-10 minutes.
+                   Your node rewards are being routed through the secure gateway. Funds typically arrive at your destination node within 5-60 minutes.
                  </p>
               </div>
 
