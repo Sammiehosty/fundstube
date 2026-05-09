@@ -213,10 +213,72 @@ export default function AdminPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-3">
-            <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl overflow-hidden relative group">
-              <div className="flex items-center gap-3 mb-8"><div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500 border border-emerald-500/20"><BarChart3 size={20} /></div><div><h2 className="text-xl font-black tracking-tight uppercase text-white">Network Earning History</h2><p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Real-time reward distribution</p></div></div>
-              <div className="overflow-x-auto"><table className="w-full border-collapse"><thead><tr className="border-b border-white/5 text-[9px] text-slate-500 font-black uppercase tracking-widest"><th className="text-left py-4 px-2">Participant</th><th className="text-left py-4 px-2">Reward</th><th className="text-left py-4 px-2">Node</th><th className="text-right py-4 px-2">Amount</th></tr></thead><tbody className="divide-y divide-white/5">{!Array.isArray(earningsHistory) || earningsHistory.length === 0 ? (<tr><td colSpan={4} className="py-12 text-center text-slate-700 font-bold uppercase tracking-widest text-[10px]">No recent sequences</td></tr>) : (earningsHistory.slice(0, 15).map((reward, i) => (<tr key={i} className="group hover:bg-white/[0.02] transition-all"><td className="py-4 px-2"><div className="font-black text-xs text-white uppercase">{reward.fullName || 'User'}</div><div className="text-[9px] text-slate-600 font-bold font-mono">NODE_{reward.user_code}</div></td><td className="py-4 px-2"><span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${reward.type === 'bonus' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>{reward.type}</span></td><td className="py-4 px-2"><div className="text-[10px] text-slate-400 font-bold italic opacity-60">0x{reward.id?.substring(3, 7)}</div><div className="text-[8px] text-slate-700 font-black uppercase">{new Date(Number(reward.timestamp)).toLocaleString()}</div></td><td className="py-4 px-2 text-right"><div className="font-black text-emerald-400 text-sm tracking-tight">+₦{Number(reward.amount || 0).toLocaleString()}</div></td></tr>)))}</tbody></table></div>
+           <div className="lg:col-span-3">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl overflow-hidden relative group">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform duration-500">
+                <TrendingUp size={120} />
+              </div>
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500 border border-emerald-500/20">
+                    <BarChart3 size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black tracking-tight uppercase text-white">Network Earning History</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Real-time reward distribution log</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={loadData}
+                  className="p-2 bg-white/5 border border-white/10 rounded-lg text-slate-400 hover:text-white transition-all"
+                  title="Force Refresh"
+                >
+                  <RefreshCcw size={16} />
+                </button>
+              </div>
+
+              <div className="overflow-x-auto text-left max-h-[150px] overflow-y-auto">
+                <table className="w-full border-collapse ">
+                  <thead>
+                    <tr className="border-b border-white/5 text-[9px] text-slate-500 font-black uppercase tracking-widest">
+                      <th className="text-left py-4 px-2">Participant</th>
+                      <th className="text-left py-4 px-2">Reward Type</th>
+                      <th className="text-left py-4 px-2">Node Reference</th>
+                      <th className="text-right py-4 px-2">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 ">
+                    {!Array.isArray(earningsHistory) || earningsHistory.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="py-12 text-center text-slate-700 font-bold uppercase tracking-widest text-[10px]">No recent reward sequences detected</td>
+                      </tr>
+                    ) : (
+                      earningsHistory.slice(0, 15).map((reward, i) => (
+                        <tr key={i} className="group hover:bg-white/[0.02] transition-all">
+                          <td className="py-4 px-2 text-left">
+                             <div className="font-black text-xs text-white uppercase">{reward.fullName || 'User'}</div>
+                             <div className="text-[9px] text-slate-600 font-bold font-mono">NODE_{reward.user_code}</div>
+                          </td>
+                          <td className="py-4 px-2 text-left">
+                             <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                               reward.type === 'bonus' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                             }`}>
+                               {reward.type}
+                             </span>
+                          </td>
+                          <td className="py-4 px-2 text-left">
+                             <div className="text-[10px] text-slate-400 font-bold italic opacity-60">0x{reward.id?.substring(3, 7)}</div>
+                             <div className="text-[8px] text-slate-700 font-black uppercase">{reward.timestamp ? new Date(Number(reward.timestamp)).toLocaleString() : 'N/A'}</div>
+                          </td>
+                          <td className="py-4 px-2 text-right">
+                             <div className="font-black text-emerald-400 text-sm tracking-tight">+₦{Number(reward.amount || 0).toLocaleString()}</div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
