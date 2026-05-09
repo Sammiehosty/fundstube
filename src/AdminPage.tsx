@@ -629,6 +629,7 @@ export default function AdminPage() {
                       <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
                         <th className="py-4 px-2 text-left">Name</th>
                         <th className="py-4 px-2 text-left">Amount</th>
+						  <th className="py-4 px-2 text-left">Details</th>
                         <th className="py-4 px-2 text-right">Action</th>
                       </tr>
                     </thead>
@@ -637,14 +638,17 @@ export default function AdminPage() {
                        <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
                          <td className="py-4 px-2">
                            <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
-                           <div className="text-[8px] text-slate-600 font-bold">{sub.phone}</div>
-							  <div className="text-[8px] text-slate-600 font-bold">{sub.email}</div>
+                           
                          </td>
 
 						    <td className="py-4 px-2">
                             <div className="font-black text-white text-xs">₦{Number(sub.price || 0).toLocaleString()}</div>
                          </td>
-
+						<td className="py-4 px-2">
+                          
+                           <div className="text-xs text-slate-600 font-bold">{sub.phone}</div>
+							  <div className="text-[8px] text-slate-600 font-bold">{sub.email}</div>
+                         </td>
 						   
                          <td className="py-4 px-2 text-right">
                             <div className="flex flex-col items-end gap-1">
