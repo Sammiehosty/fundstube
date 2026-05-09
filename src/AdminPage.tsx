@@ -30,6 +30,7 @@ import { api as db, AdminSettings, AccessCode, Transaction, PaymentSubmission } 
 
 export default function AdminPage() {
   const [settings, setSettings] = useState<AdminSettings | null>(null);
+  const [draftSettings, setDraftSettings] = useState<AdminSettings | null>(null);
   const [submissions, setSubmissions] = useState<PaymentSubmission[]>([]);
   const [accessCodes, setAccessCodes] = useState<AccessCode[]>([]);
   const [earningsHistory, setEarningsHistory] = useState<any[]>([]);
@@ -54,12 +55,10 @@ export default function AdminPage() {
     type: 'warning'
   });
   const navigate = useNavigate();
-
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
   };
-
   const loadData = async () => {
     try {
       const [s, sub, c, e] = await Promise.all([
@@ -68,15 +67,18 @@ export default function AdminPage() {
         db.getAccessCodes(),
         db.getAllEarnings()
       ]);
-      if (s) setSettings(s);
+      if (s) {
+        setSettings(s);
+        // Only initialize draft settings once to prevent overwriting user input
+        setDraftSettings(prev => prev || s);
+      }
       setSubmissions(Array.isArray(sub) ? sub : []);
       if (Array.isArray(c)) setAccessCodes(c);
       setEarningsHistory(Array.isArray(e) ? e : []);
     } catch (err) {
       console.error("Critical Admin Sync Failure:", err);
-      // Fallback UI data if not already set
       if (!settings) {
-        setSettings({
+        const fallback = {
           appName: 'Fundstube',
           price: 6900,
           accountNumber: '---',
@@ -92,19 +94,32 @@ export default function AdminPage() {
           minWithdrawalBank: 1000,
           minWithdrawalUsdt: 5,
           autoApprovePayments: false
-        });
+        };
+        setSettings(fallback);
+        setDraftSettings(fallback);
       }
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 10000);
+    // Poll data but DON'T overwrite draftSettings while admin is editing
+    const interval = setInterval(async () => {
+       try {
+         const [sub, c, e] = await Promise.all([
+            db.getSubmissions(),
+            db.getAccessCodes(),
+            db.getAllEarnings()
+         ]);
+         setSubmissions(Array.isArray(sub) ? sub : []);
+         if (Array.isArray(c)) setAccessCodes(c);
+         setEarningsHistory(Array.isArray(e) ? e : []);
+       } catch (err) {}
+    }, 15000);
     return () => clearInterval(interval);
   }, []);
-
+	
   const confirmCancelWithdrawal = async () => {
     if (!cancellingTx) return;
     const { code, txId } = cancellingTx;
@@ -206,20 +221,20 @@ export default function AdminPage() {
     }
   };
 
-  const handleUpdateSettings = async (e: React.FormEvent) => {
+    const handleUpdateSettings = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!settings) return;
-    if (settings.price < 100) {
+    if (!draftSettings) return;
+    if (draftSettings.price < 100) {
       showToast('Price must be at least ₦100', 'error');
       return;
     }
     try {
-      await db.saveSettings(settings);
+      await db.saveSettings(draftSettings);
+      setSettings(draftSettings); // Update live reference
       showToast('Configuration updated and deployed');
     } catch (err) {
       showToast('Failed to update configuration', 'error');
     }
-  };
 
   const resetSettings = () => {
     setConfirmModal({
@@ -453,14 +468,15 @@ export default function AdminPage() {
               </div>
 
               <form onSubmit={handleUpdateSettings} className="space-y-6 text-left max-h-[400px] overflow-y-auto">
-                 <div className="space-y-6">
+                
+                <div className="space-y-6">
                   <div>
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Access Code Price (₦)</label>
                     <input 
                       type="number" 
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-blue-400"
-                      value={settings?.price || 0}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, price: parseInt(e.target.value)} : null)}
+                      value={draftSettings?.price || 0}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, price: parseInt(e.target.value)} : null)}
                     />
                   </div>
                   <div>
@@ -468,8 +484,8 @@ export default function AdminPage() {
                     <input 
                       type="text" 
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-white"
-                      value={settings?.bankName || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, bankName: e.target.value} : null)}
+                      value={draftSettings?.bankName || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, bankName: e.target.value} : null)}
                     />
                   </div>
                   <div>
@@ -477,8 +493,8 @@ export default function AdminPage() {
                     <input 
                       type="text" 
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all font-mono tracking-wider text-white"
-                      value={settings?.accountNumber || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, accountNumber: e.target.value} : null)}
+                      value={draftSettings?.accountNumber || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, accountNumber: e.target.value} : null)}
                     />
                   </div>
                   <div>
@@ -486,8 +502,8 @@ export default function AdminPage() {
                     <input 
                       type="text" 
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-xs text-white"
-                      value={settings?.accountName || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, accountName: e.target.value} : null)}
+                      value={draftSettings?.accountName || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, accountName: e.target.value} : null)}
                     />
                   </div>
                   <div>
@@ -495,8 +511,8 @@ export default function AdminPage() {
                     <input 
                       type="text" 
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-rose-400"
-                      value={settings?.adminPassword || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, adminPassword: e.target.value} : null)}
+                      value={draftSettings?.adminPassword || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, adminPassword: e.target.value} : null)}
                     />
                   </div>
                   
@@ -507,12 +523,12 @@ export default function AdminPage() {
                     </div>
                     <button 
                       type="button"
-                      onClick={() => setSettings(prev => prev ? {...prev, autoApprovePayments: !prev.autoApprovePayments} : null)}
+                      onClick={() => setDraftSettings(prev => prev ? {...prev, autoApprovePayments: !prev.autoApprovePayments} : null)}
                       className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
-                        settings?.autoApprovePayments ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/20 text-rose-500 border border-rose-500/20'
+                        draftSettings?.autoApprovePayments ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/20 text-rose-500 border border-rose-500/20'
                       }`}
                     >
-                      {settings?.autoApprovePayments ? 'Enabled (YES)' : 'Disabled (NO)'}
+                      {draftSettings?.autoApprovePayments ? 'Enabled (YES)' : 'Disabled (NO)'}
                     </button>
                   </div>
 
@@ -522,8 +538,8 @@ export default function AdminPage() {
                       type="text" 
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-emerald-400 font-mono text-[10px]"
                       placeholder="Enter TRC20 Wallet Address"
-                      value={settings?.adminUsdtWallet || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, adminUsdtWallet: e.target.value} : null)}
+                      value={draftSettings?.adminUsdtWallet || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, adminUsdtWallet: e.target.value} : null)}
                     />
                   </div>
 
@@ -532,8 +548,8 @@ export default function AdminPage() {
                     <input 
                       type="text" 
                       className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-blue-400"
-                      value={settings?.telegramLink || ''}
-                      onChange={(e) => setSettings(prev => prev ? {...prev, telegramLink: e.target.value} : null)}
+                      value={draftSettings?.telegramLink || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, telegramLink: e.target.value} : null)}
                     />
                   </div>
 
@@ -541,12 +557,12 @@ export default function AdminPage() {
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Community Popup</label>
                     <button 
                       type="button"
-                      onClick={() => setSettings(prev => prev ? {...prev, communityPopupEnabled: !prev.communityPopupEnabled} : null)}
+                      onClick={() => setDraftSettings(prev => prev ? {...prev, communityPopupEnabled: !prev.communityPopupEnabled} : null)}
                       className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
-                        settings?.communityPopupEnabled ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20'
+                        draftSettings?.communityPopupEnabled ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20'
                       }`}
                     >
-                      {settings?.communityPopupEnabled ? 'Enabled' : 'Disabled'}
+                      {draftSettings?.communityPopupEnabled ? 'Enabled' : 'Disabled'}
                     </button>
                   </div>
 
@@ -556,8 +572,8 @@ export default function AdminPage() {
                       <input 
                         type="number" 
                         className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs text-white"
-                        value={settings?.minWithdrawalBank || 0}
-                        onChange={(e) => setSettings(prev => prev ? {...prev, minWithdrawalBank: parseInt(e.target.value)} : null)}
+                        value={draftSettings?.minWithdrawalBank || 0}
+                        onChange={(e) => setDraftSettings(prev => prev ? {...prev, minWithdrawalBank: parseInt(e.target.value)} : null)}
                       />
                     </div>
                     <div>
@@ -565,8 +581,8 @@ export default function AdminPage() {
                       <input 
                         type="number" 
                         className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs text-white"
-                        value={settings?.minWithdrawalUsdt || 0}
-                        onChange={(e) => setSettings(prev => prev ? {...prev, minWithdrawalUsdt: parseInt(e.target.value)} : null)}
+                        value={draftSettings?.minWithdrawalUsdt || 0}
+                        onChange={(e) => setDraftSettings(prev => prev ? {...prev, minWithdrawalUsdt: parseInt(e.target.value)} : null)}
                       />
                     </div>
                   </div>
@@ -583,26 +599,26 @@ export default function AdminPage() {
                           rows={4}
                           placeholder="Paste support script here..."
                           className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-mono text-[10px] px-6 focus:border-blue-500/50 transition-all text-slate-300"
-                          value={settings?.supportCode || ''}
-                          onChange={(e) => setSettings(prev => prev ? {...prev, supportCode: e.target.value} : null)}
+                          value={draftSettings?.supportCode || ''}
+                          onChange={(e) => setDraftSettings(prev => prev ? {...prev, supportCode: e.target.value} : null)}
                         />
                       </div>
                       <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Support Status</label>
                         <button 
                           type="button"
-                          onClick={() => setSettings(prev => prev ? {...prev, supportEnabled: !prev.supportEnabled} : null)}
+                          onClick={() => setDraftSettings(prev => prev ? {...prev, supportEnabled: !prev.supportEnabled} : null)}
                           className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
-                            settings?.supportEnabled ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20'
+                            draftSettings?.supportEnabled ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20'
                           }`}
                         >
-                          {settings?.supportEnabled ? 'Online' : 'Offline'}
+                          {draftSettings?.supportEnabled ? 'Online' : 'Offline'}
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
-
+					 
                 <div className="pt-4 space-y-3">
                   <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] text-white">
                     Apply Updates
