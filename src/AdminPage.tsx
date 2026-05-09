@@ -407,7 +407,7 @@ export default function AdminPage() {
                       <th className="text-right py-4 px-2">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-white/5 max-h-[150px] overflow-y-auto">
                     {!Array.isArray(earningsHistory) || earningsHistory.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="py-12 text-center text-slate-700 font-bold uppercase tracking-widest text-[10px]">No recent reward sequences detected</td>
@@ -452,7 +452,7 @@ export default function AdminPage() {
                 <h2 className="text-xl font-black tracking-tight text-white uppercase">Configuration</h2>
               </div>
 
-              <form onSubmit={handleUpdateSettings} className="space-y-6 text-left">
+              <form onSubmit={handleUpdateSettings} className="space-y-6 text-left max-h-[200px] overflow-y-auto">
                 <div className="space-y-6">
                   <div>
                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Access Code Price (₦)</label>
@@ -805,7 +805,7 @@ export default function AdminPage() {
                     </div>
                   </div>
                 </div>
-                <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2">
+                <div className="max-h-[150px] overflow-y-auto space-y-3 pr-2">
                   {Array.isArray(inspectingCode.profile.transactions) ? inspectingCode.profile.transactions.map((tx) => (
                     <div key={tx.id} className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:bg-white/[0.05] transition-all">
                       <div className="flex items-center gap-4">
