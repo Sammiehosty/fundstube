@@ -616,9 +616,22 @@ export default function AdminPage() {
                <div className="flex justify-between items-center mb-8">
                   <h2 className="text-xl font-black uppercase text-white">Access Log</h2>
                   <span className="text-[10px] font-black text-slate-500 uppercase">{Array.isArray(submissions) ? submissions.length : 0} Leads</span>
+				    <button 
+                  onClick={clearSubmissions}
+                  className="px-5 py-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest"
+                >
+                  <Trash2 size={14} /> Wipe Records
+                </button>
                </div>
                <div className="overflow-x-auto text-left">
                  <table className="w-full border-collapse">
+					  <thead>
+                      <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
+                        <th className="py-4 px-2 text-left">Name</th>
+                        <th className="py-4 px-2 text-left">Amount</th>
+                        <th className="py-4 px-2 text-right">Action</th>
+                      </tr>
+                    </thead>
                    <tbody className="divide-y divide-white/5">
                      {submissions.slice(0, 10).map((sub) => (
                        <tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
@@ -626,9 +639,15 @@ export default function AdminPage() {
                            <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
                            <div className="text-[9px] text-slate-600 font-bold">{sub.phone}</div>
                          </td>
+
+						    <td className="py-4 px-2">
+                            <div className="font-black text-white text-xs">₦{Number(sub.price || 0).toLocaleString()}</div>
+                         </td>
+
+						   
                          <td className="py-4 px-2 text-right">
                             <div className="flex flex-col items-end gap-1">
-                               <div className="font-black text-white text-xs">₦{Number(sub.price || 0).toLocaleString()}</div>
+                              
                                <button 
                                 onClick={async () => {
                                   const matchingCode = accessCodes.find(c => c.user === sub.fullName);
@@ -657,10 +676,10 @@ export default function AdminPage() {
                <div className="flex justify-between items-center mb-8">
                   <h2 className="text-xl font-black uppercase text-white">Active Nodes</h2>
                   <button onClick={handleGenerateCode} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase">
-                    New Code
+                    Generate New Code
                   </button>
                </div>
-               <div className="overflow-x-auto text-left">
+               <div className="overflow-x-auto text-left max-h-[400px] overflow-y-auto">
                  <table className="w-full border-collapse">
                     <thead>
                       <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
