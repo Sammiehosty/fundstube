@@ -345,7 +345,7 @@ export default function AdminPage() {
 								  <div className="flex flex-col items-end gap-2">
 									 
 									  <button onClick={async () => { const mc = accessCodes.find(c => c.user === sub.fullName); if(mc) { const fp = await db.getProfile(mc.code); setInspectingCode({...mc, profile: fp}); } else { showToast("No active node found", "error"); } }} className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg">
-										  <Eye size={12} /> View Log
+										  <Eye size={12} /> 
 									  </button>
 								  </div>
 							  </td>
@@ -359,7 +359,35 @@ export default function AdminPage() {
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-xl font-black uppercase text-white">Active Access Nodes</h2>
                 <button onClick={handleGenerateCode} className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase shadow-lg shadow-blue-900/20 active:scale-95 transition-all flex items-center gap-2"><Plus size={14} /> New Code</button></div>
-              <div className="overflow-x-auto text-left max-h-[300px] overflow-y-auto"><table className="w-full border-collapse"><thead><tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase tracking-widest"><th className="py-4 px-2 text-left">Key</th><th className="py-4 px-2 text-left">Node Owner</th><th className="py-4 px-2 text-right">Earning Control</th></tr></thead><tbody className="divide-y divide-white/5">{accessCodes.map((ac) => (<tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left"><td className="py-5 px-2"><div className="font-mono text-lg font-black text-blue-400 tracking-widest">{ac.code}</div><div className="text-[8px] font-black uppercase text-slate-700 tracking-tighter mt-1">{ac.status}</div></td><td className="py-5 px-2 text-left"><div className="font-black text-xs text-white uppercase">{ac.user || 'Unassigned Node'}</div><div className="text-[10px] text-emerald-500 font-black mt-1 tracking-tighter">TOTAL: ₦{Number(ac.totalEarned || 0).toLocaleString()}</div></td><td className="py-5 px-2 text-right flex justify-end gap-3 items-center mt-2">{ac.user && (<button onClick={async () => { const fp = await db.getProfile(ac.code); setInspectingCode({...ac, profile: fp}); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[9px] font-black uppercase shadow-lg transition-all hover:scale-105 active:scale-95">Audit Log</button>)}<button onClick={() => handleDeleteCode(ac.code)} className="p-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 transition-all hover:text-white"><Trash2 size={16} /></button></td></tr>))}</tbody></table></div>
+              <div className="overflow-x-auto text-left max-h-[300px] overflow-y-auto">
+				  <table className="w-full border-collapse">
+					  <thead>
+						  <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase tracking-widest">
+							  <th className="py-4 px-2 text-left">Key</th>
+							  <th className="py-4 px-2 text-left">Node Owner</th>
+							  <th className="py-4 px-2 text-right">Earning </th>
+							   <th className="py-4 px-2 text-right">Action</th>
+						  </tr>
+					  </thead>
+					  <tbody className="divide-y divide-white/5">
+						  {accessCodes.map((ac) => (<tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left">
+							  <td className="py-5 px-2">
+								  <div className="font-mono text-lg font-black text-blue-400 tracking-widest">{ac.code}</div>
+								  <div className="text-[8px] font-black uppercase text-slate-700 tracking-tighter mt-1">{ac.status}</div>
+							  </td>
+							  <td className="py-5 px-2 text-left">
+								  <div className="font-black text-xs text-white uppercase">{ac.user || 'Unassigned Node'}</div>
+							  </td>
+							  <td className="py-5 px-2 text-left">
+								
+								  <div className="text-xs text-emerald-500 font-black mt-1 tracking-tighter">₦{Number(ac.totalEarned || 0).toLocaleString()}</div>
+							  </td>
+							  <td className="py-5 px-2 text-right flex justify-end gap-3 items-center mt-2">
+								  {ac.user && (<button onClick={async () => { const fp = await db.getProfile(ac.code); setInspectingCode({...ac, profile: fp}); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[9px] font-black uppercase shadow-lg transition-all hover:scale-105 active:scale-95">
+									  <Eye size={12} /> 
+								  </button>)}
+								  <button onClick={() => handleDeleteCode(ac.code)} className="p-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 transition-all hover:text-white"><Trash2 size={16} />
+								  </button></td></tr>))}</tbody></table></div>
             </div>
           </div>
         </div>
