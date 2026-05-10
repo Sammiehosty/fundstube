@@ -224,7 +224,7 @@ export default function AdminPage() {
                     <BarChart3 size={20} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-black tracking-tight uppercase text-white">Network Earning History</h2>
+                    <h2 className="text-[14px] font-black tracking-tight uppercase text-white">Network Earning History</h2>
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Real-time reward distribution log</p>
                   </div>
                 </div>
@@ -285,29 +285,155 @@ export default function AdminPage() {
           <div className="lg:col-span-1">
             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl h-full sticky top-12">
               <div className="flex items-center gap-3 mb-10"><div className="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20"><Settings size={20} /></div><h2 className="text-xl font-black tracking-tight text-white uppercase font-black">Config</h2></div>
-              <form onSubmit={handleUpdateSettings} className="space-y-6">
-                <div><label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">App Name</label><input type="text" className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-white text-sm" value={draftSettings.appName} onChange={(e) => setDraftSettings({...draftSettings, appName: e.target.value})} /></div>
-                <div><label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Activation Price (₦)</label><input type="number" className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-blue-400 text-sm" value={draftSettings.price} onChange={(e) => setDraftSettings({...draftSettings, price: parseInt(e.target.value)})} /></div>
-                <div><label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">USDT Wallet (TRC20)</label><input type="text" className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-mono text-[9px] px-6 focus:border-emerald-500/50 transition-all text-emerald-400" value={draftSettings.adminUsdtWallet} onChange={(e) => setDraftSettings({...draftSettings, adminUsdtWallet: e.target.value})} /></div>
-                <div><label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Telegram Link</label><input type="text" className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-blue-400 text-xs" value={draftSettings.telegramLink} onChange={(e) => setDraftSettings({...draftSettings, telegramLink: e.target.value})} /></div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">Min Bank</label><input type="number" className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 text-xs" value={draftSettings.minWithdrawalBank} onChange={(e) => setDraftSettings({...draftSettings, minWithdrawalBank: parseInt(e.target.value)})} /></div>
-                  <div><label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">Min USDT</label><input type="number" className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 text-xs" value={draftSettings.minWithdrawalUsdt} onChange={(e) => setDraftSettings({...draftSettings, minWithdrawalUsdt: parseInt(e.target.value)})} /></div>
+              <div className="space-y-6">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Access Code Price (₦)</label>
+                    <input 
+                      type="number" 
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-blue-400"
+                      value={draftSettings?.price || 0}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, price: parseInt(e.target.value)} : null)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Payment Bank</label>
+                    <input 
+                      type="text" 
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-white"
+                      value={draftSettings?.bankName || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, bankName: e.target.value} : null)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Account Number</label>
+                    <input 
+                      type="text" 
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all font-mono tracking-wider text-white"
+                      value={draftSettings?.accountNumber || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, accountNumber: e.target.value} : null)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Account Name</label>
+                    <input 
+                      type="text" 
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-xs text-white"
+                      value={draftSettings?.accountName || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, accountName: e.target.value} : null)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-white">Admin Password</label>
+                    <input 
+                      type="text" 
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-rose-400"
+                      value={draftSettings?.adminPassword || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, adminPassword: e.target.value} : null)}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl mt-4">
+                    <div className="flex flex-col">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Auto-Approve Payments</label>
+                      <p className="text-[8px] text-slate-600 font-bold">Generate codes automatically</p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setDraftSettings(prev => prev ? {...prev, autoApprovePayments: !prev.autoApprovePayments} : null)}
+                      className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
+                        draftSettings?.autoApprovePayments ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/20 text-rose-500 border border-rose-500/20'
+                      }`}
+                    >
+                      {draftSettings?.autoApprovePayments ? 'Enabled (YES)' : 'Disabled (NO)'}
+                    </button>
+                  </div>
+
+                  <div className="mt-6">
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-emerald-500">Global USDT Wallet (TRC20)</label>
+                    <input 
+                      type="text" 
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-emerald-400 font-mono text-[10px]"
+                      placeholder="Enter TRC20 Wallet Address"
+                      value={draftSettings?.adminUsdtWallet || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, adminUsdtWallet: e.target.value} : null)}
+                    />
+                  </div>
+
+                  <div className="mt-6">
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Telegram Link</label>
+                    <input 
+                      type="text" 
+                      className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-blue-400"
+                      value={draftSettings?.telegramLink || ''}
+                      onChange={(e) => setDraftSettings(prev => prev ? {...prev, telegramLink: e.target.value} : null)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl mt-4">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Community Popup</label>
+                    <button 
+                      type="button"
+                      onClick={() => setDraftSettings(prev => prev ? {...prev, communityPopupEnabled: !prev.communityPopupEnabled} : null)}
+                      className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
+                        draftSettings?.communityPopupEnabled ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20'
+                      }`}
+                    >
+                      {draftSettings?.communityPopupEnabled ? 'Enabled' : 'Disabled'}
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-[8px]">Min Bank (₦)</label>
+                      <input 
+                        type="number" 
+                        className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs text-white"
+                        value={draftSettings?.minWithdrawalBank || 0}
+                        onChange={(e) => setDraftSettings(prev => prev ? {...prev, minWithdrawalBank: parseInt(e.target.value)} : null)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1 text-[8px]">Min USDT ($)</label>
+                      <input 
+                        type="number" 
+                        className="w-full py-3 bg-white/5 border border-white/10 rounded-xl outline-none font-bold px-4 focus:border-blue-500/50 transition-all text-xs text-white"
+                        value={draftSettings?.minWithdrawalUsdt || 0}
+                        onChange={(e) => setDraftSettings(prev => prev ? {...prev, minWithdrawalUsdt: parseInt(e.target.value)} : null)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-white/5 mt-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Headset size={14} className="text-blue-500" />
+                      <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Live Support Integration</h4>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Integration Code (Script)</label>
+                        <textarea 
+                          rows={4}
+                          placeholder="Paste support script here..."
+                          className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl outline-none font-mono text-[10px] px-6 focus:border-blue-500/50 transition-all text-slate-300"
+                          value={draftSettings?.supportCode || ''}
+                          onChange={(e) => setDraftSettings(prev => prev ? {...prev, supportCode: e.target.value} : null)}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Support Status</label>
+                        <button 
+                          type="button"
+                          onClick={() => setDraftSettings(prev => prev ? {...prev, supportEnabled: !prev.supportEnabled} : null)}
+                          className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${
+                            draftSettings?.supportEnabled ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20'
+                          }`}
+                        >
+                          {draftSettings?.supportEnabled ? 'Online' : 'Offline'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
-                <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
-                  <span className="text-[9px] font-black text-slate-500 uppercase">Community Popup</span>
-                  <button type="button" onClick={() => setDraftSettings({...draftSettings, communityPopupEnabled: !draftSettings.communityPopupEnabled})} className={`px-4 py-2 rounded-lg font-black text-[9px] uppercase ${draftSettings.communityPopupEnabled ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}`}>{draftSettings.communityPopupEnabled ? 'ON' : 'OFF'}</button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
-                  <span className="text-[9px] font-black text-slate-500 uppercase">Live Support</span>
-                  <button type="button" onClick={() => setDraftSettings({...draftSettings, supportEnabled: !draftSettings.supportEnabled})} className={`px-4 py-2 rounded-lg font-black text-[9px] uppercase ${draftSettings.supportEnabled ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}`}>{draftSettings.supportEnabled ? 'ON' : 'OFF'}</button>
-                </div>
-
-                <div><label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Support Script</label><textarea rows={3} className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl font-mono text-[9px] text-slate-400" value={draftSettings.supportCode} onChange={(e) => setDraftSettings({...draftSettings, supportCode: e.target.value})} /></div>
-
                 <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-xl shadow-blue-900/20 transition-all">Apply Updates</button>
               </form>
             </div>
