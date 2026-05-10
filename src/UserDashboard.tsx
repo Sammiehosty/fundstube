@@ -1173,7 +1173,7 @@ export default function UserDashboard() {
                           {tx.type === 'withdrawal' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
                         </div>
                         <div>
-                          <p className="text-sm font-black text-white">{tx.description}</p>
+                          <p className="text-xs font-black text-white">{tx.description}</p>
                           <p className="text-[10px] font-bold text-slate-500 uppercase mt-1 flex items-center gap-2">
                             {new Date(tx.timestamp).toLocaleString()}
                             <span className="w-1 h-1 bg-slate-700 rounded-full" />
