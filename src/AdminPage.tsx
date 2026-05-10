@@ -314,7 +314,12 @@ export default function AdminPage() {
 
           <div className="lg:col-span-2 space-y-8">
              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
-              <h2 className="text-xl font-black uppercase text-white mb-8 flex justify-between items-center">Access Log <span className="text-[10px] text-slate-500">{submissions.length} leads</span></h2>
+              <h2 className="text-xl font-black uppercase text-white mb-8 flex justify-between items-center">Access Log <span className="text-[10px] text-slate-500">{submissions.length} leads</span>  <button 
+                  onClick={clearSubmissions}
+                  className="px-5 py-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest"
+                >
+                  <Trash2 size={14} /> Wipe Records
+                </button></h2>
               <div className="overflow-x-auto text-left">
 				  <table className="w-full border-collapse">
 					   <thead>
