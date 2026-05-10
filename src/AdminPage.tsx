@@ -315,13 +315,7 @@ export default function AdminPage() {
           <div className="lg:col-span-2 space-y-8">
              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
               <h2 className="text-xl font-black uppercase text-white mb-8 flex justify-between items-center">Access Log <span className="text-[10px] text-slate-500">{submissions.length} leads</span></h2>
-				  <button 
-                  onClick={clearSubmissions}
-                  className="px-5 py-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest"
-                >
-                  <Trash2 size={14} /> Wipe Records
-                </button>
-              <div className="overflow-x-auto text-left max-h-[200px] overflow-y-auto">
+              <div className="overflow-x-auto text-left">
 				  <table className="w-full border-collapse">
 					   <thead>
                       <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
@@ -333,21 +327,21 @@ export default function AdminPage() {
                     </thead>
 					  <tbody className="divide-y divide-white/5">
 						  {submissions.slice(0, 15).map((sub) => (<tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
-							  <td className="py-2 px-2 text-left flex flex-col">
+							  <td className="py-5 px-2 text-left flex flex-col">
 								  <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
 								 
 							  </td>
-							   <td className="py-2 px-2 text-left">
+							   <td className="py-5 px-2 text-right">
 								  <div className="flex flex-col items-end gap-2">
 									  <div className="font-black text-white text-xs tracking-tighter">₦{Number(sub.price || 0).toLocaleString()}</div>
 								  </div>
 							  </td>
-							   <td className="py-2 px-2 text-left flex flex-col">
+							   <td className="py-5 px-2 text-left flex flex-col">
 								  
 								  <div className="text-[10px] text-slate-500 font-bold">{sub.phone}</div>
 								  <div className="text-[9px] text-slate-600 font-bold lowercase opacity-60 italic">{sub.email}</div>
 							  </td>
-							  <td className="py-2 px-2 text-right">
+							  <td className="py-5 px-2 text-right">
 								  <div className="flex flex-col items-end gap-2">
 									 
 									  <button onClick={async () => { const mc = accessCodes.find(c => c.user === sub.fullName); if(mc) { const fp = await db.getProfile(mc.code); setInspectingCode({...mc, profile: fp}); } else { showToast("No active node found", "error"); } }} className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg">
@@ -370,25 +364,25 @@ export default function AdminPage() {
 					  <thead>
 						  <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase tracking-widest">
 							  <th className="py-4 px-2 text-left">Codes</th>
-							  <th className="py-4 px-2 text-left">Node Owner</th>
+							  <th className="py-4 px-2 text-left">Users</th>
 							  <th className="py-4 px-2 text-right">Earnings </th>
 							   <th className="py-4 px-2 text-right">Action</th>
 						  </tr>
 					  </thead>
 					  <tbody className="divide-y divide-white/5">
 						  {accessCodes.map((ac) => (<tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left">
-							  <td className="py-2 px-2">
+							  <td className="py-5 px-2">
 								  <div className="font-mono text-xs font-black text-blue-400 tracking-widest">{ac.code}</div>
 								
 							  </td>
-							  <td className="py-2 px-2 text-left">
+							  <td className="py-5 px-2 text-left">
 								  <div className="font-black text-xs text-white uppercase">{ac.user || 'Unassigned Node'}</div>
 							  </td>
-							  <td className="py-2 px-2 text-left">
+							  <td className="py-5 px-2 text-left">
 								
 								  <div className="text-xs text-emerald-500 font-black mt-1 tracking-tighter">₦{Number(ac.totalEarned || 0).toLocaleString()}</div>
 							  </td>
-							  <td className="py-2 px-2 text-right flex justify-end gap-3 items-center mt-2">
+							  <td className="py-5 px-2 text-right flex justify-end gap-3 items-center mt-2">
 								  {ac.user && (<button onClick={async () => { const fp = await db.getProfile(ac.code); setInspectingCode({...ac, profile: fp}); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[9px] font-black uppercase shadow-lg transition-all hover:scale-105 active:scale-95">
 									  <Eye size={12} /> 
 								  </button>)}
@@ -419,12 +413,7 @@ export default function AdminPage() {
 				  
                 <div className="flex-1 bg-gradient-to-br from-blue-600 to-indigo-800 p-8 rounded-[2rem] flex flex-col justify-center text-left text-white shadow-2xl"><div className="flex items-center gap-2 text-blue-100/60 font-black text-[11px] uppercase tracking-widest mb-3 opacity-60"><Wallet size={14} /> Global Protocol Balance</div><h4 className="text-5xl font-black tracking-tighter mb-4 text-white drop-shadow-xl">₦{(Number(inspectingCode.profile.balance) || 0).toLocaleString()}</h4><div className="h-0.5 w-full bg-white/10 my-4 opacity-30" /><div className="flex justify-between items-center"><span className="text-[10px] font-black uppercase text-blue-100/60">Node Earning Yield</span><span className="font-black text-white text-xl tracking-tighter">₦{(Number(inspectingCode.profile.earnings) || 0).toLocaleString()}</span></div></div>
               </div>
-              <div className="space-y-6 text-left">
-				  <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2 mb-4">Transaction Audit Ledger</h4>
-				  <div className=" max-h-[150px] overflow-y-auto space-y-3 pr-3 ">
-					  {Array.isArray(inspectingCode.profile.transactions) ? inspectingCode.profile.transactions.map((tx) => (<div key={tx.id} className="flex items-center justify-between p-5 bg-white/[0.03] border border-white/5 rounded-2xl group transition-all hover:bg-white/5 hover:border-white/10">
-						  
-						  <div className="flex items-center gap-5"><div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${tx.type !== 'withdrawal' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>{tx.type !== 'withdrawal' ? <ArrowDownLeft size={18} /> : <ArrowUpRight size={18} />}</div><div><p className="text-[13px] font-black text-white capitalize tracking-tight">{tx.description}</p><p className="text-[9px] text-slate-600 font-bold uppercase tracking-widest mt-1">{new Date(Number(tx.timestamp)).toLocaleString()}</p></div></div><div className="flex items-center gap-6"><div className="text-right"><p className={`text-sm font-black tracking-tight ${tx.type !== 'withdrawal' ? 'text-emerald-400' : 'text-red-400'}`}>{tx.type !== 'withdrawal' ? '+' : '-'}₦{Number(tx.amount || 0).toLocaleString()}</p><div className="flex items-center gap-1.5 justify-end mt-1"><div className={`w-1 h-1 rounded-full ${tx.status === 'approved' ? 'bg-emerald-500' : tx.status === 'pending' ? 'bg-amber-500' : 'bg-red-500'}`} /><span className={`text-[8px] font-black uppercase tracking-widest ${tx.status === 'approved' ? 'text-emerald-500' : tx.status === 'pending' ? 'text-amber-500' : 'text-red-500'}`}>{tx.status}</span></div></div>{tx.type === 'withdrawal' && tx.status !== 'canceled' && (<button onClick={() => setCancellingTx({code: inspectingCode.code, txId: tx.id, amount: tx.amount})} className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 transition-all hover:text-white border border-red-500/20 shadow-lg shadow-red-900/10" title="Revoke Protocol Request"><Ban size={18} /></button>)}</div></div>)) : (<p className="text-center py-20 text-slate-700 font-black uppercase tracking-[0.2em] text-xs">No active sequences found</p>)}</div></div>
+              <div className="space-y-6 text-left"><h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2 mb-4">Transaction Audit Ledger</h4><div className="max-h-[100px] overflow-y-auto space-y-3 pr-3 ">{Array.isArray(inspectingCode.profile.transactions) ? inspectingCode.profile.transactions.map((tx) => (<div key={tx.id} className="flex items-center justify-between p-5 bg-white/[0.03] border border-white/5 rounded-2xl group transition-all hover:bg-white/5 hover:border-white/10"><div className="flex items-center gap-5"><div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${tx.type !== 'withdrawal' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>{tx.type !== 'withdrawal' ? <ArrowDownLeft size={18} /> : <ArrowUpRight size={18} />}</div><div><p className="text-[13px] font-black text-white capitalize tracking-tight">{tx.description}</p><p className="text-[9px] text-slate-600 font-bold uppercase tracking-widest mt-1">{new Date(Number(tx.timestamp)).toLocaleString()}</p></div></div><div className="flex items-center gap-6"><div className="text-right"><p className={`text-sm font-black tracking-tight ${tx.type !== 'withdrawal' ? 'text-emerald-400' : 'text-red-400'}`}>{tx.type !== 'withdrawal' ? '+' : '-'}₦{Number(tx.amount || 0).toLocaleString()}</p><div className="flex items-center gap-1.5 justify-end mt-1"><div className={`w-1 h-1 rounded-full ${tx.status === 'approved' ? 'bg-emerald-500' : tx.status === 'pending' ? 'bg-amber-500' : 'bg-red-500'}`} /><span className={`text-[8px] font-black uppercase tracking-widest ${tx.status === 'approved' ? 'text-emerald-500' : tx.status === 'pending' ? 'text-amber-500' : 'text-red-500'}`}>{tx.status}</span></div></div>{tx.type === 'withdrawal' && tx.status !== 'canceled' && (<button onClick={() => setCancellingTx({code: inspectingCode.code, txId: tx.id, amount: tx.amount})} className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 transition-all hover:text-white border border-red-500/20 shadow-lg shadow-red-900/10" title="Revoke Protocol Request"><Ban size={18} /></button>)}</div></div>)) : (<p className="text-center py-20 text-slate-700 font-black uppercase tracking-[0.2em] text-xs">No active sequences found</p>)}</div></div>
             </motion.div>
           </div>
         )}</AnimatePresence>
