@@ -319,29 +319,29 @@ export default function AdminPage() {
 				  <table className="w-full border-collapse">
 					   <thead>
                       <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase">
-                        <th className="py-4 px-2 text-left">Name</th>
-                        <th className="py-4 px-2 text-left">Amount</th>
-						  <th className="py-4 px-2 text-left">Details</th>
-                        <th className="py-4 px-2 text-right">Action</th>
+                        <th className="py-2 px-2 text-left">Name</th>
+                        <th className="py-2 px-2 text-left">Amount</th>
+						  <th className="py-2 px-2 text-left">Details</th>
+                        <th className="py-2 px-2 text-right">Action</th>
                       </tr>
                     </thead>
 					  <tbody className="divide-y divide-white/5">
 						  {submissions.slice(0, 15).map((sub) => (<tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
-							  <td className="py-5 px-2 text-left flex flex-col">
+							  <td className="py-2 px-2 text-left flex flex-col">
 								  <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
 								 
 							  </td>
-							   <td className="py-5 px-2 text-right">
+							   <td className="py-2 px-2 text-right">
 								  <div className="flex flex-col items-end gap-2">
 									  <div className="font-black text-white text-xs tracking-tighter">₦{Number(sub.price || 0).toLocaleString()}</div>
 								  </div>
 							  </td>
-							   <td className="py-5 px-2 text-left flex flex-col">
+							   <td className="py-2 px-2 text-left flex flex-col">
 								  
 								  <div className="text-[10px] text-slate-500 font-bold">{sub.phone}</div>
 								  <div className="text-[9px] text-slate-600 font-bold lowercase opacity-60 italic">{sub.email}</div>
 							  </td>
-							  <td className="py-5 px-2 text-right">
+							  <td className="py-2 px-2 text-right">
 								  <div className="flex flex-col items-end gap-2">
 									 
 									  <button onClick={async () => { const mc = accessCodes.find(c => c.user === sub.fullName); if(mc) { const fp = await db.getProfile(mc.code); setInspectingCode({...mc, profile: fp}); } else { showToast("No active node found", "error"); } }} className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg">
@@ -363,26 +363,26 @@ export default function AdminPage() {
 				  <table className="w-full border-collapse">
 					  <thead>
 						  <tr className="border-b border-white/5 text-[9px] text-slate-600 font-black uppercase tracking-widest">
-							  <th className="py-4 px-2 text-left">Codes</th>
-							  <th className="py-4 px-2 text-left">Users</th>
-							  <th className="py-4 px-2 text-right">Earnings </th>
-							   <th className="py-4 px-2 text-right">Action</th>
+							  <th className="py-2 px-2 text-left">Codes</th>
+							  <th className="py-2 px-2 text-left">Users</th>
+							  <th className="py-2 px-2 text-right">Earnings </th>
+							   <th className="py-2 px-2 text-right">Action</th>
 						  </tr>
 					  </thead>
 					  <tbody className="divide-y divide-white/5">
 						  {accessCodes.map((ac) => (<tr key={ac.code} className="group hover:bg-white/[0.02] transition-all text-left">
-							  <td className="py-5 px-2">
+							  <td className="py-2 px-2">
 								  <div className="font-mono text-xs font-black text-blue-400 tracking-widest">{ac.code}</div>
 								
 							  </td>
-							  <td className="py-5 px-2 text-left">
+							  <td className="py-2 px-2 text-left">
 								  <div className="font-black text-xs text-white uppercase">{ac.user || 'Unassigned Node'}</div>
 							  </td>
-							  <td className="py-5 px-2 text-left">
+							  <td className="py-2 px-2 text-left">
 								
 								  <div className="text-xs text-emerald-500 font-black mt-1 tracking-tighter">₦{Number(ac.totalEarned || 0).toLocaleString()}</div>
 							  </td>
-							  <td className="py-5 px-2 text-right flex justify-end gap-3 items-center mt-2">
+							  <td className="py-2 px-2 text-right flex justify-end gap-3 items-center mt-2">
 								  {ac.user && (<button onClick={async () => { const fp = await db.getProfile(ac.code); setInspectingCode({...ac, profile: fp}); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[9px] font-black uppercase shadow-lg transition-all hover:scale-105 active:scale-95">
 									  <Eye size={12} /> 
 								  </button>)}
