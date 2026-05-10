@@ -198,7 +198,7 @@ export default function AdminPage() {
             <h1 className="text-3xl font-black tracking-tight text-white uppercase italic">Admin Gateway</h1>
             <div className="flex items-center gap-2 mt-2 w-full justify-center">
                <div className={`w-1.5 h-1.5 rounded-full ${settings ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
-               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">{settings ? 'Sync Active' : 'Offline'}</p>
+               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">{settings ? 'Server is Active' : 'Offline'}</p>
             </div>
           </div>
           <form onSubmit={(e) => {
@@ -207,12 +207,12 @@ export default function AdminPage() {
             else setLoginError('Incorrect Phrase');
           }} className="space-y-6 text-left">
             <input 
-              type="password" autoFocus placeholder="Authentication Phrase"
+              type="password" autoFocus placeholder="••••••••"
               className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl outline-none font-bold px-6 focus:border-blue-500/50 transition-all text-center text-white"
               value={password} onChange={(e) => { setPassword(e.target.value); setLoginError(null); }}
             />
             {loginError && <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[10px] font-black uppercase text-center">{loginError}</div>}
-            <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-lg text-white transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)]">Unlock Console</button>
+            <button className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-lg text-white transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)]">Login Admin</button>
             <button type="button" onClick={() => navigate('/')} className="w-full text-slate-500 hover:text-white font-bold text-[10px] uppercase tracking-[0.3em] text-center">Exit to Interface</button>
           </form>
         </div>
