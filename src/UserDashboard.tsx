@@ -1185,7 +1185,7 @@ export default function UserDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className={`font-black text-sm ${
+                        <p className={`font-black text-xs ${
                           tx.type === 'withdrawal' && tx.status !== 'canceled' ? 'text-red-400' : 'text-emerald-400'
                         }`}>
                           {tx.type === 'withdrawal' && tx.status !== 'canceled' ? '-' : '+'}₦{tx.amount.toLocaleString()}
