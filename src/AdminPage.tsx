@@ -325,7 +325,34 @@ export default function AdminPage() {
                         <th className="py-4 px-2 text-right">Action</th>
                       </tr>
                     </thead>
-					  <tbody className="divide-y divide-white/5">{submissions.slice(0, 15).map((sub) => (<tr key={sub.id} className="group hover:bg-white/[0.02] transition-all"><td className="py-5 px-2 text-left flex flex-col"><div className="font-black text-xs text-white uppercase">{sub.fullName}</div><div className="text-[10px] text-slate-500 font-bold">{sub.phone}</div><div className="text-[9px] text-slate-600 font-bold lowercase opacity-60 italic">{sub.email}</div></td><td className="py-5 px-2 text-right"><div className="flex flex-col items-end gap-2"><div className="font-black text-white text-sm tracking-tighter">₦{Number(sub.price || 0).toLocaleString()}</div><button onClick={async () => { const mc = accessCodes.find(c => c.user === sub.fullName); if(mc) { const fp = await db.getProfile(mc.code); setInspectingCode({...mc, profile: fp}); } else { showToast("No active node found", "error"); } }} className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg"><Eye size={12} /> View Log</button></div></td></tr>))}</tbody></table></div>
+					  <tbody className="divide-y divide-white/5">
+						  {submissions.slice(0, 15).map((sub) => (<tr key={sub.id} className="group hover:bg-white/[0.02] transition-all">
+							  <td className="py-5 px-2 text-left flex flex-col">
+								  <div className="font-black text-xs text-white uppercase">{sub.fullName}</div>
+								 
+							  </td>
+							   <td className="py-5 px-2 text-right">
+								  <div className="flex flex-col items-end gap-2">
+									  <div className="font-black text-white text-xs tracking-tighter">₦{Number(sub.price || 0).toLocaleString()}</div>
+								  </div>
+							  </td>
+							   <td className="py-5 px-2 text-left flex flex-col">
+								  
+								  <div className="text-[10px] text-slate-500 font-bold">{sub.phone}</div>
+								  <div className="text-[9px] text-slate-600 font-bold lowercase opacity-60 italic">{sub.email}</div>
+							  </td>
+							  <td className="py-5 px-2 text-right">
+								  <div className="flex flex-col items-end gap-2">
+									 
+									  <button onClick={async () => { const mc = accessCodes.find(c => c.user === sub.fullName); if(mc) { const fp = await db.getProfile(mc.code); setInspectingCode({...mc, profile: fp}); } else { showToast("No active node found", "error"); } }} className="px-4 py-2 bg-blue-600 border border-blue-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 shadow-lg">
+										  <Eye size={12} /> View Log
+									  </button>
+								  </div>
+							  </td>
+						  </tr>))}
+					  </tbody>
+				  </table>
+			  </div>
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-2xl">
